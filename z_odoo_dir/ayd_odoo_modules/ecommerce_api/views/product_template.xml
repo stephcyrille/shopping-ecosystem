@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <record id="view_product_template_common_api" model="ir.ui.view">
+      <field name="name">product.template.common.inherit.form</field>
+      <field name="model">product.template</field>
+      <field name="inherit_id" ref="product.product_template_form_view" />
+      <field name="arch" type="xml">
+        <field name="description_sale" position="replace">
+          <field colspan="2" name="api_product_description" nolabel="1" placeholder="This note is added to sales orders and invoices."/>
+        </field>
+
+        <!-- Adding dimension value and unity -->
+        <div name="weight" position="after">
+          <label for="dimensions_value" />
+          <div name="dimension_div" class="o_row">
+            <field name="dimensions_value" placeholder="12 x 8 x 15" />
+            <field name="dimensions_unity" placeholder="cm" required="0" />
+          </div>
+        </div>
+      </field>
+    </record>
+  </data>
+</odoo>
