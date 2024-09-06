@@ -14,40 +14,47 @@ class GetSessionIdViews(APIView):
     renderer_classes = (JSONRenderer,)
 
     def get(self, request):
-        response = connect_to_odoo()
+        cached_data = cache.get('session_id')
+        print(cached_data)
 
-        
-        if 'responseCode' in response:
-            if 'data' in response:
-                try:
-                    session_id = response.get('data').get('session_id')
-                    cache.set('session_id_key', session_id, timeout=300)
-                except Exception as e:
-                    print(f"Error when catching: {e.__str__()}")
+        if not cached_data:
+            response = connect_to_odoo()
+            if 'responseCode' in response:
+                if 'data' in response:
+                    try:
+                        session_id = response.get('data').get('session_id')
+                        cache.set('session_id', session_id, timeout=(60 * 60 * 24 * 2)) # Timeout for 2 days
+                    except Exception as e:
+                        print(f"Error when catching: {e.__str__()}")
 
-                values = {
-                    "responseCode": 200,
-                    "description": "Authentication successed",
-                }
-                return Response(values, status=status.HTTP_200_OK)
+                    values = {
+                        "responseCode": status.HTTP_200_OK,
+                        "description": "Authentication successed",
+                    }
+                    return Response(values, status=status.HTTP_200_OK)
+                else:
+                    message = ''
+                    try:
+                        message = response.get('message')
+                    except Exception as e:
+                        message = '(Status code : 400) Other error'
+
+                    values = {
+                        "responseCode": status.HTTP_401_UNAUTHORIZED,
+                        "description": message,
+                    }
+                    return Response(values, status=status.HTTP_401_UNAUTHORIZED)
             else:
-                message = ''
-                try:
-                    message = response.get('message')
-                except Exception as e:
-                    message = '(Status code : 400) Other error'
-
                 values = {
-                    "responseCode": 7777,
-                    "description": message,
+                    "errorCode": 500,
+                    "error": "Odoo server error",
                 }
+                if 'error' in response:
+                    values['description'] = response['error']
                 return Response(values, status=status.HTTP_200_OK)
         else:
-            values = {
-                "errorCode": 500,
-                "error": "Odoo server error",
-            }
-            if 'error' in response:
-                values['description'] = response['error']
-            return Response(values, status=status.HTTP_200_OK)
+            return Response({'message': f'Yo {cached_data}'})
+
+        
+        
         
