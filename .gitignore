@@ -97,4 +97,5 @@ commands
 
 # Docker data files
 z_odoo_dir/data
-z_postgres-data/
+z_postgres-data/django
+z_postgres-data/odoo

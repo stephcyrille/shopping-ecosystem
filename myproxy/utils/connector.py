@@ -48,10 +48,9 @@ class APIConnector:
         try:
             response = requests.post(f"{self.base_url}/{login_endpoint}", json=payload)
             response.raise_for_status()
-            response_data = response.json()
 
             # Assuming the session ID is returned in 'session_id'
-            self.session_id = response_data.get('session_id')
+            self.session_id = response.cookies.get('session_id')
             
             # Store session ID in cache
             if self.session_id:
