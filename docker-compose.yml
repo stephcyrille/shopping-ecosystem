@@ -1,0 +1,51 @@
+# docker-compose.yml
+version: '3.9'
+
+services:
+  db_ayd_odoo:
+    image: postgres:13
+    volumes:
+      - ./z_postgres-data/odoo:/var/lib/postgresql/data
+    env_file:
+      - .env.db.odoo
+  
+  db_ayd_django:
+    image: postgres:13
+    volumes:
+      - ./z_postgres-data/django:/var/lib/postgresql/data
+    env_file:
+      - .env.db.django
+  
+  redis_ayd:
+    image: redis:latest
+
+  odoo_ayd:
+    image: odoo:16.0
+    depends_on:
+      - db_ayd_odoo
+    ports:
+      - 9500:8069
+    volumes:
+      - ./z_odoo_dir/data:/var/lib/odoo
+      - ./z_odoo_dir/conf:/etc/odoo
+      - ./z_odoo_dir/ayd_odoo_modules:/mnt/extra-addons
+
+  ayd_backend:
+    build: .
+    working_dir: /app
+    command: |
+      sh -c "
+      python manage.py makemigrations && 
+      python manage.py migrate && 
+      python manage.py runserver 0.0.0.0:8000
+      "
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db_ayd_django
+      - redis_ayd
+    env_file:
+      - .env
+
