@@ -25,7 +25,10 @@ Ecommerce REST API module: contains multiple routes
 
     # always loaded
     'data': [
-        "views/product_template.xml"
+        'security/ir.model.access.csv',
+        
+        "views/product_template.xml",
+        "views/website_site_banner.xml"
     ],
     'assets': {
          # 'web.assets_frontend': [
