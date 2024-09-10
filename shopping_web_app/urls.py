@@ -19,10 +19,12 @@ from django.urls import path
 from myproxy.views import * 
 from myproxy.apis.session_apis import * 
 from myproxy.apis.products_apis import * 
+from myproxy.apis.banners_apis import * 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('apis/test/', TestView.as_view()),
     path('apis/init', GetSessionIdViews.as_view()),
     path('apis/products/list', GetProductListAPIViews.as_view()),
+    path('apis/banners/list', GetBannersListAPIViews.as_view()),
 ]
