@@ -77,6 +77,7 @@ def deserialize_product(product):
         'id': product.id,
         'name': product.name,
         'price': product.list_price,
+        'internal_code': product.default_code,
         'description': product.api_product_description,
         'rich_description': product.description,
         'categories': product_categories,
