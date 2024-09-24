@@ -65,6 +65,13 @@ def deserialize_product(product):
                 variant_images_list.append(v_image)
             curr_variant['pictures'] = variant_images_list
             all_variants_list.append(curr_variant)
+    list_size = []
+    for size in product.size_ids:
+        val = {
+            'code': size.code,
+            'name': size.name
+        }
+        list_size.append(val)
 
     return {
         'id': product.id,
@@ -81,5 +88,5 @@ def deserialize_product(product):
         },
         'has_variants': has_variants,
         'variants': all_variants_list,
-        'custom_sizes': [size.code for size in product.size_ids]
+        'custom_sizes': list_size
     }

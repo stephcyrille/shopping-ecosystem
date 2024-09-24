@@ -19,7 +19,8 @@ class WebsiteCustomSize(models.Model):
     _description = 'Ecommerce website size custom'
     _rec_name = 'code'
 
-    code = fields.Char(string='Banner Name', required=True) 
+    code = fields.Char(string='Code', required=True) 
+    name = fields.Char(string='Name', required=True) 
     category = fields.Selection([
         ('clothing', 'Clothing'),
         ('shoes', 'Shoes'),
