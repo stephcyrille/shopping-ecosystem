@@ -30,6 +30,8 @@ Ecommerce REST API module: contains multiple routes
         "views/product_template.xml",
         "views/website_site_banner.xml",
         "views/website_home_collection.xml",
+        "views/website_size.xml",
+        "views/product_template_size.xml",
     ],
     'assets': {
          # 'web.assets_frontend': [

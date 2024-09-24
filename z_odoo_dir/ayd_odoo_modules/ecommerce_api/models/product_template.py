@@ -20,3 +20,4 @@ class ProductTemplateWebAPI(models.Model):
     api_product_description = fields.Text('Product Description')
     dimensions_value = fields.Char('Dimensions')
     dimensions_unity = fields.Char('Dim unity')
+    size_ids = fields.Many2many('website.size.custom', 'product_website_size_rel', string='Sizes')

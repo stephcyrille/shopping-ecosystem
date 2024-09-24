@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <record id="website_custom_size_form_view" model="ir.ui.view">
+        <field name="name">website.size.custom.form</field>
+        <field name="model">website.size.custom</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title mb24">
+                        <h1>
+                            <field class="text-break" name="code" default_focus="1" placeholder="e.g. XS" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="category" />
+                        </group>
+                        <group>
+                            <field name="size_system" />
+                        </group>
+                    </group>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+     <record id="website_custom_size_list_view" model="ir.ui.view">
+        <field name="name">website.size.custom.form</field>
+        <field name="model">website.size.custom</field>
+        <field name="arch" type="xml">
+            <tree string="Custom size list" multi_edit="1" sample="1">
+            <field name="code" />
+            <field name="category" />
+            <field name="size_system" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="website_custom_size_action" model="ir.actions.act_window">
+        <field name="name">Website custom size</field>
+        <field name="res_model">website.size.custom</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                There is no website custom size created yet.
+            </p>
+            <p>
+                You can create a website custom size now.
+            </p>
+        </field>
+    </record>
+    
+    <menuitem id="menu_website_custom_size"
+        parent="menu_site_advanced"
+        sequence="3"
+        name="Custom sizes"
+        action="website_custom_size_action"/>
+
+  </data>
+</odoo>
