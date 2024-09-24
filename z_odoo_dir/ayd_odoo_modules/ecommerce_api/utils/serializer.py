@@ -80,5 +80,6 @@ def deserialize_product(product):
             'dimensions': f"{product.dimensions_value} {product.dimensions_unity}",
         },
         'has_variants': has_variants,
-        'variants': all_variants_list
+        'variants': all_variants_list,
+        'custom_sizes': [size.code for size in product.size_ids]
     }
