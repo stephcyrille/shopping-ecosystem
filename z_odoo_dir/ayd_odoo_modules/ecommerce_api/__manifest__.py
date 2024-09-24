@@ -28,7 +28,8 @@ Ecommerce REST API module: contains multiple routes
         'security/ir.model.access.csv',
         
         "views/product_template.xml",
-        "views/website_site_banner.xml"
+        "views/website_site_banner.xml",
+        "views/website_home_collection.xml",
     ],
     'assets': {
          # 'web.assets_frontend': [

@@ -20,11 +20,16 @@ from myproxy.views import *
 from myproxy.apis.session_apis import * 
 from myproxy.apis.products_apis import * 
 from myproxy.apis.banners_apis import * 
+from myproxy.apis.home_collections_apis import * 
+from myproxy.apis.categories_apis import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('apis/test/', TestView.as_view()),
     path('apis/init', GetSessionIdViews.as_view()),
+    path('apis/products/categories', GetCategoriesListAPIViews.as_view()),
     path('apis/products/list', GetProductListAPIViews.as_view()),
+    path('apis/products/single/<int:id>', GetSingleProductAPIViews.as_view()),
     path('apis/banners/list', GetBannersListAPIViews.as_view()),
+    path('apis/home/collections', GetHomeCollectionsAPIViews.as_view()),
 ]

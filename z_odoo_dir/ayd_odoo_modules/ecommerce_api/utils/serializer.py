@@ -71,6 +71,7 @@ def deserialize_product(product):
         'name': product.name,
         'price': product.list_price,
         'description': product.api_product_description,
+        'rich_description': product.description,
         'categories': product_categories,
         'image_list': product_images,
         'url': f'{product.get_base_url()}{product.website_url}',

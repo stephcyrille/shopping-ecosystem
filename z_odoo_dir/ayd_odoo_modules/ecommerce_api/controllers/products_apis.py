@@ -105,4 +105,31 @@ class EcommerceAPI(http.Controller):
             mimetype='application/json'
         )
 
+    @http.route(['/apis/categories'], type='http', auth='public', methods=["GET"], website=True)
+    def get_categories_list(self, **params):
+        categories_list = http.request.env['product.public.category'].sudo().search([])
 
+        categories = []
+        for category in categories_list:
+            val = {
+                'id': category.id,
+                'name': category.name,
+            }
+            categories.append(val)
+
+        curr_page = 1
+        total_pages = len(categories)
+        page_size = len(categories)
+        res = {
+            "count": page_size,
+            # "prev": 0,
+            "current": curr_page,
+            # "next": 2,
+            "total_pages": total_pages,
+            "result": categories
+        }
+        return http.Response(
+            json.dumps(res),
+            status=200,
+            mimetype='application/json'
+        )
