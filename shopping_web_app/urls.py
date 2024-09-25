@@ -30,6 +30,7 @@ urlpatterns = [
     path('apis/products/categories', GetCategoriesListAPIViews.as_view()),
     path('apis/products/list', GetProductListAPIViews.as_view()),
     path('apis/products/single/<int:id>', GetSingleProductAPIViews.as_view()),
-    path('apis/banners/list', GetBannersListAPIViews.as_view()),
+    path('apis/banners/home', GetHomeBannerAPIViews.as_view()),
+    path('apis/banners/shop', GetShopBannerAPIViews.as_view()),
     path('apis/home/collections', GetHomeCollectionsAPIViews.as_view()),
 ]
