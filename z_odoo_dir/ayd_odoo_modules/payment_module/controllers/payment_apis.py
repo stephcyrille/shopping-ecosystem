@@ -77,8 +77,8 @@ class PaymentNotchPayAPI(http.Controller):
                     http.request.env['payment.notch.request'].sudo().create(vals)
 
                     res = {
-                        "code": '',
-                        "data": vals
+                        "code": response.status_code,
+                        "result": vals
                     }
                     return http.Response(
                         json.dumps(res),
@@ -86,10 +86,9 @@ class PaymentNotchPayAPI(http.Controller):
                         mimetype='application/json'
                     )
                 else:
-                    _logger.error("Failed to initialize payment: %s", response_data.get('message', 'Unknown error'))
                     res = {
-                        "code": '',
-                        "errorMessage": f"Failed to initialize payment {response_data.get('message', 'Unknown error')}"
+                        "code": 400,
+                        "errorMessage": f"Serveur side error {response_data.get('message', 'Unknown error')}"
                     }
                     return http.Response(
                         json.dumps(res),
@@ -99,7 +98,7 @@ class PaymentNotchPayAPI(http.Controller):
 
             except Exception as e:
                 res = {
-                    "code": '',
+                    "code": 406,
                     "errorMessage": f"Failed to initialize payment {e.__str__()}"
                 }
                 return http.Response(
@@ -109,7 +108,7 @@ class PaymentNotchPayAPI(http.Controller):
                 )
         else:
             res = {
-                "code": '',
+                "code": 401,
                 "errorMessage": "Please fill the API Key"
             }
             return http.Response(
