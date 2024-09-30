@@ -22,6 +22,7 @@ from myproxy.apis.products_apis import *
 from myproxy.apis.banners_apis import * 
 from myproxy.apis.home_collections_apis import * 
 from myproxy.apis.categories_apis import *
+from myproxy.apis.payments_apis import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,4 +34,5 @@ urlpatterns = [
     path('apis/banners/home', GetHomeBannerAPIViews.as_view()),
     path('apis/banners/shop', GetShopBannerAPIViews.as_view()),
     path('apis/home/collections', GetHomeCollectionsAPIViews.as_view()),
+    path('apis/payments/init', MakePaymentAPIViews.as_view()),
 ]

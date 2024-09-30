@@ -12,6 +12,7 @@
 # ==============================================================================
 
 from odoo import api, fields, models, _
+from datetime import datetime
 
 
 class PaymentTransaction(models.Model):
@@ -52,10 +53,10 @@ class PaymentTransaction(models.Model):
     
     @api.model
     def create(self, vals):
-        vals['created_at'] = fields.Datetime.now()
+        vals['created_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         return super(PaymentTransaction, self).create(vals)
     
     def write(self, vals):
-        vals['updated_at'] = fields.Datetime.now()
+        vals['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         return super(PaymentTransaction, self).write(vals)
 

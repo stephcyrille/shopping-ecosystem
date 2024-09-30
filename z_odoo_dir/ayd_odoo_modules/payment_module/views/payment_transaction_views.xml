@@ -4,7 +4,7 @@
         <field name="name">payment.notch.request.tree</field>
         <field name="model">payment.notch.request</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create="false">
                 <field name="reference"/>
                 <field name="customer_id"/>
                 <field name="amount"/>
@@ -20,7 +20,7 @@
       <field name="name">payment.notch.request.form</field>
       <field name="model">payment.notch.request</field>
       <field name="arch" type="xml">
-        <form>
+        <form create="false">
           <header>
             <field name="status" widget="statusbar" statusbar_visible="pending,processing,complete" />
           </header>
@@ -29,31 +29,31 @@
               <label for="reference" string="Transaction ref"/>
               <h1>
                 <div class="d-flex">
-                  <field class="text-break" name="reference" placeholder="e.g. TRX.133000RTTER000" />
+                  <field class="text-break" name="reference" placeholder="e.g. TRX.133000RTTER000" readonly="true" />
                 </div>
               </h1>
             </div>
             <group>
               <group>
-                <field name="customer_id"/>
-                <field name="reference"/>
-                <field name="currency"/>
-                <field name="geo" label="Adresse IP" />
-                <field name="sandbox"/>
+                <field name="customer_id" readonly="true" />
+                <field name="reference" readonly="true" />
+                <field name="currency" readonly="true" />
+                <field name="geo" label="Adresse IP" readonly="true" />
+                <field name="created_at" readonly="1"/>
+                <field name="updated_at" readonly="1"/>
+                <field name="sandbox" readonly="true" />
               </group>
 
               <group>
-                <field name="amount"/>
-                <field name="amount_total"/>
-                <field name="fee"/>
-                <field name="converted_amount"/>
+                <field name="amount" readonly="true" />
+                <field name="amount_total" readonly="true" />
+                <field name="fee" readonly="true" />
+                <field name="converted_amount" readonly="true"/>
               </group>
               
             </group>
             <group string="Transaction details">
-              <field colspan="2" name="description"/>
-              <!-- <field name="created_at" readonly="1"/>
-              <field name="updated_at" readonly="1"/> -->
+              <field colspan="2" name="description" readonly="true" />
             </group>
           </sheet>
         </form>

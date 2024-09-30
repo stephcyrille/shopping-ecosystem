@@ -35,6 +35,7 @@ class EcommerceAPI(http.Controller):
         print(f"IP: {http.request.httprequest.remote_addr}")
         print(check_auth(http.request.session.uid, http.request.env['res.users']))
         print(http.request.session.get('sale_order_id'))
+        print(f"{http.request.env['ir.config_parameter'].sudo().get_param('website.dev_api_key', default='')}")
         print('\n\n')
 
         curr_page = 1
@@ -46,7 +47,8 @@ class EcommerceAPI(http.Controller):
             "current": curr_page,
             # "next": 2,
             "total_pages": total_pages,
-            "result": products
+            "result": products,
+            "key_API": http.request.env['ir.config_parameter'].sudo().get_param('website.dev_api_key', default='')
         }
         return http.Response(
             json.dumps(res),
