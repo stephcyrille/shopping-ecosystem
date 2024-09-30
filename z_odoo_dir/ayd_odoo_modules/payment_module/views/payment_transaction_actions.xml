@@ -1,0 +1,13 @@
+<odoo>
+    <!-- Action to open the payment transactions -->
+    <record id="action_payment_transaction" model="ir.actions.act_window">
+        <field name="name">Payment Transactions</field>
+        <field name="res_model">payment.notch.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first payment transaction
+            </p>
+        </field>
+    </record>
+</odoo>

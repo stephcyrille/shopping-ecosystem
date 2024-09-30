@@ -1,0 +1,9 @@
+<odoo>
+    <!-- Submenu to access transactions -->
+    <menuitem 
+      id="menu_payment_transaction" 
+      name="Transactions" 
+      parent="ecommerce_api.menu_site_advanced" 
+      action="action_payment_transaction" 
+      sequence="4"/>
+</odoo>

@@ -1,0 +1,76 @@
+<odoo>
+    <!-- Tree View -->
+    <record id="view_payment_transaction_tree" model="ir.ui.view">
+        <field name="name">payment.notch.request.tree</field>
+        <field name="model">payment.notch.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="reference"/>
+                <field name="customer_id"/>
+                <field name="amount"/>
+                <field name="status"/>
+                <field name="currency"/>
+                <field name="created_at"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_payment_transaction_form" model="ir.ui.view">
+      <field name="name">payment.notch.request.form</field>
+      <field name="model">payment.notch.request</field>
+      <field name="arch" type="xml">
+        <form>
+          <header>
+            <field name="status" widget="statusbar" statusbar_visible="pending,processing,complete" />
+          </header>
+          <sheet>
+            <div class="oe_title">
+              <label for="reference" string="Transaction ref"/>
+              <h1>
+                <div class="d-flex">
+                  <field class="text-break" name="reference" placeholder="e.g. TRX.133000RTTER000" />
+                </div>
+              </h1>
+            </div>
+            <group>
+              <group>
+                <field name="customer_id"/>
+                <field name="reference"/>
+                <field name="currency"/>
+                <field name="geo" label="Adresse IP" />
+                <field name="sandbox"/>
+              </group>
+
+              <group>
+                <field name="amount"/>
+                <field name="amount_total"/>
+                <field name="fee"/>
+                <field name="converted_amount"/>
+              </group>
+              
+            </group>
+            <group string="Transaction details">
+              <field colspan="2" name="description"/>
+              <!-- <field name="created_at" readonly="1"/>
+              <field name="updated_at" readonly="1"/> -->
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_payment_transaction_search" model="ir.ui.view">
+        <field name="name">payment.notch.request.search</field>
+        <field name="model">payment.notch.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="reference"/>
+                <field name="customer_id"/>
+                <field name="status"/>
+                <field name="created_at"/>
+            </search>
+        </field>
+    </record>
+</odoo>
