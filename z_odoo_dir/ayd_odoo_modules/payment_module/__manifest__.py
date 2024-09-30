@@ -26,6 +26,7 @@ Custom paiement modules OM / MTN MOMO / BANK CARD / PAYPAL
         'views/payment_transaction_views.xml',
         'views/payment_transaction_actions.xml',
         'views/payment_transaction_menus.xml',
+        'views/res_config_website_settings.xml',
     ],
     'installable': True,
     'application': False

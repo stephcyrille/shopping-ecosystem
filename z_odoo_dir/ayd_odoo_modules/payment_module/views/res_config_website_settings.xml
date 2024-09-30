@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="res_config_settings_view_form" model="ir.ui.view">
+    <field name="name">
+        res.config.settings.view.form.inherit.website.payment.notch.provider
+    </field>
+    <field name="model">res.config.settings</field>
+    <field name="inherit_id"
+            ref="website.res_config_settings_view_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//div[@id='website_settings']" position="after">
+        <div class="row mt16 o_settings_container">
+          <h2>Notch pay external vendor configuration</h2>
+          <div class="o_setting_box o_searchable_setting col-12 col-lg-6">
+            <div class="o_setting_right_pane">
+              <span class="o_form_label">Dev API Key</span>
+              <div class="text-muted">
+                The customer sandbox API key.
+              </div>
+              <div class="content-group">
+                <div class="row mt16">
+                  <label for="dev_api_key" class="col-lg-3 o_light_label">Dev key</label>
+                  <field name="dev_api_key" readonly="False"/>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="o_setting_box o_searchable_setting col-12 col-lg-6">
+            <div class="o_setting_right_pane">
+              <span class="o_form_label">Production API Key</span>
+              <div class="text-muted">
+                The customer Live API key.
+              </div>
+              <div class="content-group">
+                <div class="row mt16">
+                  <label for="prod_api_key" class="col-lg-3 o_light_label">Live key</label>
+                  <field name="prod_api_key" readonly="False"/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </xpath>
+    </field>
+  </record>
+</odoo>
