@@ -91,7 +91,7 @@ class APIConnector:
             if method.upper() == 'GET':
                 response = requests.get(url, headers=headers)
             elif method.upper() == 'POST':
-                response = requests.post(url, json=data, headers=headers)
+                response = requests.post(url, json=data, data=data, headers=headers)
             else:
                 print(f"HTTP method {method} not supported.")
                 return None

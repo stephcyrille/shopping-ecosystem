@@ -28,11 +28,6 @@ class PaymentTransaction(models.Model):
     customer_id = fields.Many2one('res.partner', 'Customer')
     description = fields.Text(string="Description")
     reference = fields.Char(string="Transaction Reference")
-    status = fields.Selection([
-        ('pending', 'Pending'),
-        ('completed', 'Completed'),
-        ('failed', 'Failed'),
-    ], string="Status", default='pending')
     currency = fields.Char(string="Currency")
     geo = fields.Char(string="Geo IP")
     created_at = fields.Datetime(string="Created At")
