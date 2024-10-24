@@ -25,11 +25,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-0^2daphvdd+_tq=8bmj4q8s)%n((_vl6s=57j*l_skne+4gh0p'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+ALLOWED_HOSTS = []
+
+if 'DEV' == config('MYENV'):
+    DEBUG = True
+    ALLOWED_HOSTS = ["*"]
+    # allow cors
+    CORS_ALLOW_CREDENTIALS = True
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:3000",  # Frontend React
+        "http://localhost:8000",  # Backend Django
+        "http://localhost:9500",  # Backend Odoo
+    ]
+    
 # If we are in production ENV and we are using https, then set secured to true 
 SECURED = False
-
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -47,6 +58,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,7 +66,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'shopping_web_app.urls'
@@ -77,16 +88,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'shopping_web_app.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-# We no longer use this dummy db
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -158,9 +159,6 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # Login and Logout redirect 
 LOGIN_URL = 'signin'
 LOGOUT_REDIRECT_URL = "signin"
-
-# allow cors
-CORS_ALLOW_ALL_ORIGINS = True
 
 
 # .ENV Data

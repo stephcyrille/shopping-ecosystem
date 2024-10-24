@@ -90,7 +90,7 @@ class EcommerceAPI(http.Controller):
                 'amount_total': order.amount_total,
                 'order_line': [{
                     'product_id': line.product_id.id,
-                    'product_name': f"{line.product_id.name} {[attrs.name for attrs in line.product_id.product_template_attribute_value_ids][0]}",
+                    'product_name': f"{line.product_id.name}", #{[attrs.name for attrs in line.product_id.product_template_attribute_value_ids][0]}",
                     'product_uom_qty': line.product_uom_qty,
                     'price_unit': line.price_unit,
                     'price_subtotal': line.price_subtotal,

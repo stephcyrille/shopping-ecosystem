@@ -37,6 +37,9 @@ class MakePaymentAPIViews(APIView):
                                 }
                                 url_proceed = "/apis/payment/proceed"
                                 res_proceed = conn.make_api_call(endpoint=url_proceed, method='POST', data=json.dumps(carrier_data), headers=headers)
+                                if res_proceed.get('result').get('code') is not None and 400 == res_proceed.get('result').get('code'):
+                                    return Response(res_proceed.get('result'), status=status.HTTP_400_BAD_REQUEST)
+
                                 return Response(res_proceed.get('result'), status=status.HTTP_200_OK)
                             else:
                                 values = {

@@ -23,8 +23,10 @@ from myproxy.apis.banners_apis import *
 from myproxy.apis.home_collections_apis import * 
 from myproxy.apis.categories_apis import *
 from myproxy.apis.payments_apis import *
+from myproxy.apis.home import *
 
 urlpatterns = [
+    path('apis/', GetUserCartSessionAPIViews.as_view()),
     path('admin/', admin.site.urls),
     path('apis/test/', TestView.as_view()),
     path('apis/init', GetSessionIdViews.as_view()),
