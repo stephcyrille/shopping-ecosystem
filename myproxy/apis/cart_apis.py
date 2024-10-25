@@ -33,7 +33,7 @@ class GetCartSessionViews(APIView):
             if session_id:
                 url = f'apis/cart/current?cart_session_id={cart_session_id}'
                 res = conn.make_api_call(endpoint=url)
-                res = res.get('result')
+                res = res.get('result') if res.get('result') is not None else {}
 
                 values = {
                     "responseCode": status.HTTP_200_OK,
