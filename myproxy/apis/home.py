@@ -10,10 +10,6 @@ class GetUserCartSessionAPIViews(APIView):
 
     def get(self, request):
         cart_session_id = request.COOKIES.get('cart_session_id')
-        print("\n\n\n")
-        print(cart_session_id)
-        print("\n\n\n")
-
 
         # if we don't have a cart_session_id we need to create it and share it with the client
         if not cart_session_id:

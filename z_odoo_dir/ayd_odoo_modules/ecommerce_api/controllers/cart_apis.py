@@ -23,51 +23,22 @@ _logger = logging.getLogger(__name__)
 
 
 class EcommerceAPI(http.Controller):
-    @http.route(['/apis/cart/list'], type='http', auth='public', methods=["GET"], website=True)
-    def get_shopping_cart(self, access_token=None, revive='', **post):
+    @http.route(['/apis/cart/current'], type='http', auth='public', methods=["GET"], website=True)
+    def get_shopping_cart(self, **kwargs):
         """
            Main cart management + abandoned cart revival
            access_token: Abandoned cart SO access token
            revive: Revival method when abandoned cart. Can be 'merge' or 'squash'
        """
-        order = http.request.website.sale_get_order()
-        if order and order.state != 'draft':
-            http.request.session['sale_order_id'] = None
-            order = http.request.website.sale_get_order()
-
-        http.request.session['website_sale_cart_quantity'] = order.cart_quantity
-
+        if kwargs.get('cart_session_id'):
+            # TODO Pass Cart id to the helper funcion
+            order = http.request.website.custom_sale_get_order(session_cart_id=kwargs.get('cart_session_id'))
+            if order and order.state != 'draft':
+                order = http.request.website.custom_sale_get_order()
+        else:
+            order = None
         values = {}
         res = {}
-        if access_token:
-            abandoned_order = http.request.env['sale.order'].sudo().search([('access_token', '=', access_token)],
-                                                                           limit=1)
-            if not abandoned_order:  # wrong token (or SO has been deleted)
-                res["error"]["code"] = 200
-                res["error"]["message"] = "The sale order could not be found."
-                res["error"]["context"] = ""
-                return http.Response(
-                    json.dumps(res),
-                    status=200,
-                    mimetype='application/json'
-                )
-            if abandoned_order.state != 'draft':  # abandoned cart already finished
-                values.update({'abandoned_proceed': True})
-            elif revive == 'squash' or (revive == 'merge' and not http.request.session.get(
-                'sale_order_id')):  # restore old cart or merge with unexistant
-                http.request.session['sale_order_id'] = abandoned_order.id
-                res["result"] = []
-                return http.Response(
-                    json.dumps(res),
-                    status=200,
-                    mimetype='application/json'
-                )
-            elif revive == 'merge':
-                abandoned_order.order_line.write({'order_id': http.request.session['sale_order_id']})
-                abandoned_order.action_cancel()
-            elif abandoned_order.id != http.request.session.get(
-                'sale_order_id'):  # abandoned cart found, user have to choose what to do
-                values.update({'access_token': abandoned_order.access_token})
 
         values.update({
             'website_sale_order': order,
@@ -90,7 +61,7 @@ class EcommerceAPI(http.Controller):
                 'amount_total': order.amount_total,
                 'order_line': [{
                     'product_id': line.product_id.id,
-                    'product_name': f"{line.product_id.name}", #{[attrs.name for attrs in line.product_id.product_template_attribute_value_ids][0]}",
+                    'product_name': f"{line.product_id.name}", 
                     'product_uom_qty': line.product_uom_qty,
                     'price_unit': line.price_unit,
                     'price_subtotal': line.price_subtotal,

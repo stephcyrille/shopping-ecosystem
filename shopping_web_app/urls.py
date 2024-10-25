@@ -24,6 +24,7 @@ from myproxy.apis.home_collections_apis import *
 from myproxy.apis.categories_apis import *
 from myproxy.apis.payments_apis import *
 from myproxy.apis.home import *
+from myproxy.apis.cart_apis import *
 
 urlpatterns = [
     path('apis/', GetUserCartSessionAPIViews.as_view()),
@@ -37,4 +38,5 @@ urlpatterns = [
     path('apis/banners/shop', GetShopBannerAPIViews.as_view()),
     path('apis/home/collections', GetHomeCollectionsAPIViews.as_view()),
     path('apis/payments/init', MakePaymentAPIViews.as_view()),
+    path('apis/cart/get', GetCartSessionViews.as_view()),
 ]
