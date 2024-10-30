@@ -31,7 +31,6 @@ class EcommerceAPI(http.Controller):
            revive: Revival method when abandoned cart. Can be 'merge' or 'squash'
        """
         if kwargs.get('cart_session_id'):
-            # TODO Pass Cart id to the helper funcion
             order = http.request.website.custom_sale_get_order(session_cart_id=kwargs.get('cart_session_id'))
             if order and order.state != 'draft':
                 order = http.request.website.custom_sale_get_order()
@@ -60,6 +59,7 @@ class EcommerceAPI(http.Controller):
                 'state': order.state,
                 'amount_total': order.amount_total,
                 'order_line': [{
+                    'line_id': line.id,
                     'product_id': line.product_id.id,
                     'product_name': f"{line.product_id.name}", 
                     'product_uom_qty': line.product_uom_qty,
@@ -99,14 +99,13 @@ class EcommerceAPI(http.Controller):
         add_qty = kwargs.get('add_qty') if kwargs.get('add_qty') else None
         line_id = kwargs.get('line_id') if kwargs.get('line_id') else None
         update_methode = kwargs.get('update_methode') if kwargs.get('update_methode') else None
-
-        order = http.request.website.sale_get_order(force_create=True)
-        if order.state != 'draft':
-            http.request.website.sale_reset()
-            if kwargs.get('force_create'):
-                order = http.request.website.sale_get_order(force_create=True)
-            else:
-                return {}
+        
+        if kwargs.get('cart_ref'):
+            order = http.request.website.custom_sale_get_order(session_cart_id=kwargs.get('cart_ref'))
+            if order and order.state != 'draft':
+                order = http.request.website.custom_sale_get_order()
+        else:
+            return {}
 
         if product_custom_attribute_values:
             product_custom_attribute_values = json_scriptsafe.loads(product_custom_attribute_values)
@@ -130,8 +129,6 @@ class EcommerceAPI(http.Controller):
                 set_qty=set_qty,
             )
 
-        http.request.session['website_sale_cart_quantity'] = order.cart_quantity
-
         if not order.cart_quantity:
             http.request.website.sale_reset()
             return values
@@ -141,21 +138,13 @@ class EcommerceAPI(http.Controller):
             order.amount_total, order.currency_id
         ),
         values['amount'] = order.amount_total
+        values['cart_id'] = order.id
 
         display = True
         if not display:
+            print("\n\n")
+            print("Finnnnnn++++")
+            print("\n\n")
             return values
 
-        values['website_sale.cart_lines'] = http.request.env['ir.ui.view']._render_template(
-            "website_sale.cart_lines", {
-                'website_sale_order': order,
-                'date': fields.Date.today(),
-                'suggested_products': order._cart_accessories()
-            }
-        )
-        values['website_sale.short_cart_summary'] = http.request.env['ir.ui.view']._render_template(
-            "website_sale.short_cart_summary", {
-                'website_sale_order': order,
-            }
-        )
         return values

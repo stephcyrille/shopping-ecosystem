@@ -39,4 +39,6 @@ urlpatterns = [
     path('apis/home/collections', GetHomeCollectionsAPIViews.as_view()),
     path('apis/payments/init', MakePaymentAPIViews.as_view()),
     path('apis/cart/get', GetCartSessionViews.as_view()),
+    path('apis/cart/update/add', AddProductCartSessionViews.as_view()),
+    path('apis/cart/update/set', SetProductCartSessionViews.as_view()),
 ]
