@@ -23,7 +23,7 @@ class GetUserCartSessionAPIViews(APIView):
                 httponly=True,  # This makes the cookie HttpOnly
                 secure=False,  # Set to True if using HTTPS in production
                 samesite='Lax',  # Adjust based on your needs ('Lax', 'Strict', or 'None')
-                max_age=(60 * 60 * 24 * 2),  # The cookie will expire in 2 days
+                expires=(172800),  # The cookie will expire in 2 days
             )
             return response 
         else:
