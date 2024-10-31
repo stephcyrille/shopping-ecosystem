@@ -26,6 +26,7 @@ class PaymentTransaction(models.Model):
     fee = fields.Float(string="Fee")
     converted_amount = fields.Float(string="Converted Amount")
     customer_id = fields.Many2one('res.partner', 'Customer')
+    sale_order_id = fields.Many2one('sale.order', 'Sale order')
     description = fields.Text(string="Description")
     reference = fields.Char(string="Transaction Reference")
     currency = fields.Char(string="Currency")

@@ -36,7 +36,7 @@
             <group>
               <group>
                 <field name="customer_id" readonly="true" />
-                <field name="reference" readonly="true" />
+                <field name="sale_order_id" readonly="true" />
                 <field name="currency" readonly="true" />
                 <field name="geo" label="Adresse IP" readonly="true" />
                 <field name="created_at" readonly="1"/>

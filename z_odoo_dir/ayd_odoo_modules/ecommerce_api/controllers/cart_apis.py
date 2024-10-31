@@ -32,8 +32,6 @@ class EcommerceAPI(http.Controller):
        """
         if kwargs.get('cart_session_id'):
             order = http.request.website.custom_sale_get_order(session_cart_id=kwargs.get('cart_session_id'))
-            if order and order.state != 'draft':
-                order = http.request.website.custom_sale_get_order()
         else:
             order = None
         values = {}

@@ -90,6 +90,10 @@ class PaymentNotchPayAPI(http.Controller):
                         'geo': transaction_data.get('geo', '')
                     }
 
+                    so_id = transaction_data.get('reference', '')
+                    if so_id:
+                        vals['sale_order_id'] = int(so_id.split('#')[-1])
+
                     # Create a new record in the payment.notch.request model
                     http.request.env['payment.notch.request'].sudo().create(vals)
 
@@ -149,7 +153,7 @@ class PaymentNotchPayAPI(http.Controller):
             response_data = response.json()
             if response.status_code == 202 and response_data.get('status') == 'Accepted':
                 payment_transaction = http.request.env['payment.notch.request'].sudo().search([('reference', '=', reference)], limit=1)
-                if payment_transaction is not None:
+                if payment_transaction:
                     vals = {
                         'amount': payment_transaction.amount,
                         'amount_total': payment_transaction.amount_total,
@@ -163,6 +167,9 @@ class PaymentNotchPayAPI(http.Controller):
                         'geo': payment_transaction.geo
                     }
                     
+                    if payment_transaction.sale_order_id:
+                        payment_transaction.sale_order_id.action_confirm()
+
                     for rec in payment_transaction:
                         rec.write({
                             'status': 'complete'
