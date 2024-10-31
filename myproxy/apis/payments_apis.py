@@ -13,6 +13,15 @@ class MakePaymentAPIViews(APIView):
         conn = APIConnector()
         session_id = conn.connect() 
 
+        cart_session_id = request.COOKIES.get('cart_session_id')
+        if not cart_session_id:
+            values = {
+                "code": status.HTTP_403_FORBIDDEN,
+                "errorMessage": "Payment transaction not secured",
+                "message": "Payment transaction not secured between the endpoints",
+            }
+            return Response(values, status=status.HTTP_403_FORBIDDEN)
+
         # First check if we have a session key saved
         if session_id:
             serializer = TransactionSerializer(data=request.data)
