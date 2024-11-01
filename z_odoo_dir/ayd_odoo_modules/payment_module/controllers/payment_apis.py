@@ -14,9 +14,27 @@
 import json
 import logging
 import requests
-from odoo import http, fields
-
+from odoo import http
+import hashlib
+import uuid
 _logger = logging.getLogger(__name__)
+
+def generate_unique_code():
+    # Generate a random UUID (Universally Unique Identifier)
+    unique_id = uuid.uuid4()    
+    # Create a SHA-1 hash of the UUID
+    hash_object = hashlib.sha1(str(unique_id).encode())
+    # Convert the hash to a hexadecimal string
+    unique_code = hash_object.hexdigest()
+    return unique_code
+
+
+def get_image_url(record, field, size=None):
+    """ Returns a local url that points to the image field of a given browse record. """
+    sudo_record = record.sudo()
+    sha = hashlib.sha512(str(getattr(sudo_record, '__last_update')).encode('utf-8')).hexdigest()[:7]
+    size = '' if size is None else '/%s' % size
+    return '/web/image/%s/%s/%s%s?unique=%s' % (record._name, record.id, field, size, sha)
 
 
 class PaymentNotchPayAPI(http.Controller):
@@ -34,6 +52,7 @@ class PaymentNotchPayAPI(http.Controller):
         customer_mobile = json_data.get('customer_mobile') if json_data.get('customer_mobile') else None
         customer_street = json_data.get('customer_street') if json_data.get('customer_street') else None
         customer_city = json_data.get('customer_city') if json_data.get('customer_city') else None
+        delivery_fee = json_data.get('delivery_fee') if json_data.get('delivery_fee') else None
         # Check if the customer is already exist
         customer = http.request.env['res.partner'].sudo().search([('email', '=', customer_email)], limit=1)
 
@@ -53,7 +72,7 @@ class PaymentNotchPayAPI(http.Controller):
                 "amount": int(amount),
                 "currency": "XAF",
                 "description": description,
-                "reference": car_ref,
+                "reference": generate_unique_code(),
                 "customer": {
                     "email": customer.email,
                     "name": customer.name,
@@ -83,19 +102,26 @@ class PaymentNotchPayAPI(http.Controller):
                         'fee': transaction_data.get('fee', 0.0),
                         'converted_amount': transaction_data.get('converted_amount', 0.0),
                         'customer_id': customer.id,
-                        'description': f"{transaction_data.get('description', '')}\n{transaction_data.get('merchant_reference', '')}\n{transaction_data.get('trxref', '')}",
+                        'description': f"{transaction_data.get('description', '')}\nInternal Cart reference {car_ref}\nNotch pay Reference{transaction_data.get('trxref', '')}",
                         'reference': transaction_data.get('reference', ''),
                         'status': transaction_data.get('status', 'pending'),
                         'currency': transaction_data.get('currency', ''),
-                        'geo': transaction_data.get('geo', '')
+                        'geo': transaction_data.get('geo', ''),
+                        'delivery_fee': delivery_fee,
                     }
 
-                    so_id = transaction_data.get('reference', '')
+                    so_id = car_ref
                     if so_id:
                         vals['sale_order_id'] = int(so_id.split('#')[-1])
 
-                    # Create a new record in the payment.notch.request model
-                    http.request.env['payment.notch.request'].sudo().create(vals)
+                        # Create a new record in the payment.notch.request model
+                        payment_req = http.request.env['payment.notch.request'].sudo().create(vals)
+                        # Add a right partner for the SO
+                        payment_req.sale_order_id.write({
+                            'partner_id': customer.id
+                        })
+                    else:
+                        http.request.env['payment.notch.request'].sudo().create(vals)
 
                     res = {
                         "code": response.status_code,
@@ -154,6 +180,40 @@ class PaymentNotchPayAPI(http.Controller):
             if response.status_code == 202 and response_data.get('status') == 'Accepted':
                 payment_transaction = http.request.env['payment.notch.request'].sudo().search([('reference', '=', reference)], limit=1)
                 if payment_transaction:
+                    payment_method = ''
+                    if 'cm.orange' == channel:
+                        payment_method = 'Orange Money'
+                    elif 'cm.mtn' == channel:
+                        payment_method = 'MTN Mobile Money'
+                    else:
+                        payment_method = 'Other'
+
+                    if payment_transaction.sale_order_id:
+                        payment_transaction.sale_order_id.action_confirm()
+
+                    order = payment_transaction.sale_order_id
+                    sale_order_dict = {
+                        'id': order.id,
+                        'name': order.name,
+                        'partner_id': order.partner_id.id,
+                        'partner_name': order.partner_id.name,
+                        'date_order': order.date_order,
+                        'state': order.state,
+                        'amount_total': order.amount_total,
+                        'order_line': [{
+                            'line_id': line.id,
+                            'product_id': line.product_id.id,
+                            'product_name': f"{line.product_id.name}", 
+                            'product_uom_qty': line.product_uom_qty,
+                            'price_unit': line.price_unit,
+                            'price_subtotal': line.price_subtotal,
+                            'image': {
+                                'id': 0,
+                                'image_url': f"{line.product_id.product_tmpl_id.get_base_url()}{get_image_url(line.product_id, 'image_1920')}",
+                                'video_url': ''
+                            }
+                        } for line in order.order_line]
+                    }
                     vals = {
                         'amount': payment_transaction.amount,
                         'amount_total': payment_transaction.amount_total,
@@ -164,15 +224,16 @@ class PaymentNotchPayAPI(http.Controller):
                         'description': payment_transaction.description,
                         'status': 'completed',
                         'currency': payment_transaction.currency,
-                        'geo': payment_transaction.geo
+                        'geo': payment_transaction.geo,
+                        'delivery_fee': payment_transaction.delivery_fee,
+                        'website_sale_order': sale_order_dict,
+                        'payment_method': payment_method,
                     }
                     
-                    if payment_transaction.sale_order_id:
-                        payment_transaction.sale_order_id.action_confirm()
-
                     for rec in payment_transaction:
                         rec.write({
-                            'status': 'complete'
+                            'status': 'complete',
+                            'payment_method': payment_method
                         })
 
                     res = {

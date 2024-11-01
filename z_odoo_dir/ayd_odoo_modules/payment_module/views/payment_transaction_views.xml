@@ -45,9 +45,11 @@
               </group>
 
               <group>
+                <field name="payment_method" readonly="true" />
                 <field name="amount" readonly="true" />
                 <field name="amount_total" readonly="true" />
                 <field name="fee" readonly="true" />
+                <field name="delivery_fee" readonly="true" />
                 <field name="converted_amount" readonly="true"/>
               </group>
               

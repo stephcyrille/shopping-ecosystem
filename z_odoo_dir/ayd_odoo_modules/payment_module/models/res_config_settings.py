@@ -7,7 +7,7 @@ class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
     dev_api_key = fields.Char(string="API Key Vendor")
-    prod_api_key = fields.Char(string="Like API Key Vendor")
+    prod_api_key = fields.Char(string="Live API Key Vendor")
 
     def set_values(self):
         super(ResConfigSettings, self).set_values()

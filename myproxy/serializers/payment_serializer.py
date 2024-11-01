@@ -11,3 +11,4 @@ class TransactionSerializer(serializers.Serializer):
     customer_street = serializers.CharField(max_length=255)
     customer_city = serializers.CharField(max_length=100)
     channel = serializers.CharField(max_length=100)
+    delivery_fee = serializers.IntegerField()
