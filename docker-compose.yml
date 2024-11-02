@@ -49,3 +49,26 @@ services:
     env_file:
       - .env
 
+  # Next.js Frontend
+  ayd_frontend:
+    build:
+      context: ./afroyaca-frontend
+    command: "yarn start"  
+    volumes:
+      - ./afroyaca-frontend:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - ayd_backend
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./z_nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - odoo_ayd
+      - ayd_backend
+      - ayd_frontend
