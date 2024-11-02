@@ -140,9 +140,6 @@ class EcommerceAPI(http.Controller):
 
         display = True
         if not display:
-            print("\n\n")
-            print("Finnnnnn++++")
-            print("\n\n")
             return values
 
         return values

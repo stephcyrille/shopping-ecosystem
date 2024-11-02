@@ -31,6 +31,11 @@ class MakePaymentAPIViews(APIView):
                     'Content-Type': 'application/json'
                 }
                 res = conn.make_api_call(endpoint=url, method='POST', data=json.dumps(serializer.validated_data), headers=headers)
+                print('\n\n')
+                print(res)
+                print('\n\n')
+                print(serializer.validated_data)
+                print('\n\n')
                 try:
                     if res.get('result').get('data') is not None:
                         payment_ref = res.get('result').get('data').get('reference') 
@@ -46,6 +51,9 @@ class MakePaymentAPIViews(APIView):
                                 }
                                 url_proceed = "/apis/payment/proceed"
                                 res_proceed = conn.make_api_call(endpoint=url_proceed, method='POST', data=json.dumps(carrier_data), headers=headers)
+                                print('\n\n')
+                                print(res_proceed)
+                                print('\n\n')
                                 if res_proceed.get('result').get('code') is not None and 400 == res_proceed.get('result').get('code'):
                                     return Response(res_proceed.get('result'), status=status.HTTP_400_BAD_REQUEST)
 
@@ -70,7 +78,7 @@ class MakePaymentAPIViews(APIView):
                 except Exception as e:
                     values = {
                         "code": status.HTTP_401_UNAUTHORIZED,
-                        "errorMessage": "Failed to initialize payment",
+                        "errorMessage": "Failed to initialize payment (PROXY)",
                         "message": e.__str__()
                     }
                     return Response(values, status=status.HTTP_401_UNAUTHORIZED)
