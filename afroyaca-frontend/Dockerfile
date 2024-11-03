@@ -1,17 +1,15 @@
 # Use Node.js as the base image
-FROM node:18-alpine
+FROM node:20.9.0
 
 # Set working directory
 WORKDIR /app
 
-# Copy dependencies
-COPY package*.json yarn.lock /app/
+# Copy dependencies files first for better caching
+COPY package*.json .
+COPY yarn.lock .
 
 # Install dependencies
-RUN yarn install
-
-# Copy project files
-COPY . /app/
+RUN yarn install 
 
 # Build the Next.js app
 RUN yarn build
@@ -20,4 +18,5 @@ RUN yarn build
 EXPOSE 3000
 
 # Start the app
-CMD ["sh", "-c", "yarn", "start"]
+CMD ["yarn", "start"]
+
