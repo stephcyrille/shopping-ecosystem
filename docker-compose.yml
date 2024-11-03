@@ -5,17 +5,21 @@ services:
     image: postgres:13
     volumes:
       # - ./z_postgres-data/odoo:/var/lib/postgresql/data
-      - db:/var/lib/pgsql/data/pgdata
+      - db:/var/lib/postgresql/data
     env_file:
       - .env.db.odoo
+    environment:
+      - PGDATA=/var/lib/postgresql/data
   
   db_ayd_django:
     image: postgres:13
     volumes:
       # - ./z_postgres-data/django:/var/lib/postgresql/data
-      - dba:/var/lib/pgsql/data/pgdata
+      - dba:/var/lib/postgresql/data
     env_file:
       - .env.db.django
+    environment:
+      - PGDATA=/var/lib/postgresql/data
   
   redis_ayd:
     image: redis:latest
@@ -54,8 +58,8 @@ services:
   ayd_frontend:
     build:
       context: ./afroyaca-frontend
-    # working_dir: /app
-    command: "yarn start"  
+    working_dir: /app
+    command: "yarn start"   
     volumes:
       - ./afroyaca-frontend:/app
       - /data/yarn_cache:/usr/local/share/.cache/yarn
