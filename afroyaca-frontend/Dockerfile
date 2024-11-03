@@ -5,13 +5,13 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy dependencies
-COPY package.json yarn.lock ./
+COPY package*.json yarn.lock /app/
 
 # Install dependencies
 RUN yarn install
 
 # Copy project files
-COPY . .
+COPY . /app/
 
 # Build the Next.js app
 RUN yarn build
@@ -20,4 +20,4 @@ RUN yarn build
 EXPOSE 3000
 
 # Start the app
-CMD ["yarn", "start"]
+CMD ["sh", "-c", "yarn", "start"]
