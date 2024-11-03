@@ -4,14 +4,16 @@ services:
   db_ayd_odoo:
     image: postgres:13
     volumes:
-      - ./z_postgres-data/odoo:/var/lib/postgresql/data
+      # - ./z_postgres-data/odoo:/var/lib/postgresql/data
+      - dba:/var/lib/pgsql/data/pgdata
     env_file:
       - .env.db.odoo
   
   db_ayd_django:
     image: postgres:13
     volumes:
-      - ./z_postgres-data/django:/var/lib/postgresql/data
+      - db:/var/lib/pgsql/data/pgdata
+      # - ./z_postgres-data/django:/var/lib/postgresql/data
     env_file:
       - .env.db.django
   
@@ -25,7 +27,7 @@ services:
     ports:
       - 9500:8069
     volumes:
-      - ./z_odoo_dir/data:/var/lib/odoo
+      # - ./z_odoo_dir/data:/var/lib/odoo
       - ./z_odoo_dir/conf:/etc/odoo
       - ./z_odoo_dir/ayd_odoo_modules:/mnt/extra-addons
 
@@ -52,7 +54,7 @@ services:
   ayd_frontend:
     build:
       context: ./afroyaca-frontend
-    working_dir: /app
+    # working_dir: /app
     command: "yarn start"  
     volumes:
       - ./afroyaca-frontend:/app
@@ -72,3 +74,7 @@ services:
       - odoo_ayd
       - ayd_backend
       - ayd_frontend
+
+volumes:
+  dba:
+  db:
