@@ -52,6 +52,7 @@ services:
   ayd_frontend:
     build:
       context: ./afroyaca-frontend
+    working_dir: /app
     command: "yarn start"  
     volumes:
       - ./afroyaca-frontend:/app
