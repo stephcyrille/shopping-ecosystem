@@ -5,7 +5,7 @@ services:
     image: postgres:13
     volumes:
       # - ./z_postgres-data/odoo:/var/lib/postgresql/data
-      - db:/var/lib/postgresql/data
+      - dba_odoo:/var/lib/postgresql/data
     env_file:
       - .env.db.odoo
     environment:
@@ -15,7 +15,7 @@ services:
     image: postgres:13
     volumes:
       # - ./z_postgres-data/django:/var/lib/postgresql/data
-      - dba:/var/lib/postgresql/data
+      - dba_dj:/var/lib/postgresql/data
     env_file:
       - .env.db.django
     environment:
@@ -83,5 +83,5 @@ services:
       - ayd_frontend
 
 volumes:
-  dba:
-  db:
+  dba_odoo:
+  dba_dj:
