@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN yarn install
+RUN yarn install --no-cache
 
 # Copy project files
 COPY . .
