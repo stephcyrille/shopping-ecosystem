@@ -176,17 +176,14 @@ LOGOUT_REDIRECT_URL = "signin"
 
 
 # .ENV Data
+ODOO_SERVER_PORT = config('ODOO_SERVER_PORT')
+ODOO_USER = config('ODOO_USER')
+ODOO_PASSWORD = config('ODOO_PASSWORD')
+ODOO_DB = config('ODOO_DB')
+
 if DEBUG:
     ODOO_SERVER_HOST = f"http://{config('ODOO_SERVER_HOST')}"
-    ODOO_SERVER_PORT = config('ODOO_SERVER_PORT')
-    ODOO_USER = config('ODOO_USER')
-    ODOO_PASSWORD = config('ODOO_PASSWORD')
-    ODOO_DB = config('ODOO_DB')
 else:
-    ODOO_SERVER_PORT = os.environ.get('ODOO_SERVER_PORT')
-    ODOO_USER = os.environ.get('ODOO_USER')
-    ODOO_PASSWORD = os.environ.get('ODOO_PASSWORD')
-    ODOO_DB = os.environ.get('ODOO_DB')
     if SECURED:
         ODOO_SERVER_HOST = f"https://{config('ODOO_SERVER_HOST')}"
     else:
