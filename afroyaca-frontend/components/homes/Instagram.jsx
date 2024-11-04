@@ -14,7 +14,6 @@ export default function Instagram() {
       let data = res_data.data.result;
 
       if(data.length > 0){
-        console.log(data)
         setInstagramPictList(data);
       }
     }

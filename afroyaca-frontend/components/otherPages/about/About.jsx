@@ -4,14 +4,12 @@ import React, {useEffect, useState} from "react";
 
 export default function About() {
   const [selectedAbout, setSelectedAbout] = useState(null)
-  const [aboutPic, setAboutPic] = useState(null)
 
   useEffect(() => {
     async function fetchAboutBanner() {
       let res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/apis/banners/about`)
       let res_data = await res.json()
       let data = res_data.data.result
-      setAboutPic(null);
 
       if(data){
         setSelectedAbout(data)
@@ -28,12 +26,12 @@ export default function About() {
       <div className="about-us__content pb-5 mb-5" style={{ textAlign: 'justify' }}>
         <p className="mb-5">
         {
-          (selectedAbout) ?
-            <Image
+          selectedAbout ?
+          selectedAbout.banner && <Image
               loading="lazy"
-              loader={() => selectedAbout.picture}
+              loader={() => selectedAbout.banner.picture}
               unoptimized={true}
-              src={selectedAbout.picture}
+              src={selectedAbout.banner.picture}
               width="1783"
               height="800"
               alt="image"
@@ -81,12 +79,12 @@ export default function About() {
         </div>
         <div className="mw-930 d-lg-flex align-items-lg-center">
           <div className="image-wrapper col-lg-6">
-            {aboutPic ? 
-              <Image
+            {selectedAbout ? 
+              selectedAbout.body && <Image
                 loading="lazy"
-                loader={() => aboutPic.picture}
+                loader={() => selectedAbout.body.picture}
                 unoptimized={true}
-                src={aboutPic.picture}
+                src={selectedAbout.body.picture}
                 width="450"
                 height="500"
                 alt="image"

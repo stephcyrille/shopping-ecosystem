@@ -21,7 +21,7 @@ _logger = logging.getLogger(__name__)
 class EcommerceBannerAPI(http.Controller):
     @http.route(['/apis/banners/home'], type='http', auth='public', methods=["GET"], website=True)
     def get_banner_home(self, **params):
-        banner_home = http.request.env['website.site.banner'].sudo().search([('page', '=', 'home')])
+        banner_home = http.request.env['website.site.banner'].sudo().search([('page', '=', 'home')], limit=1)
         base_url = http.request.env['ir.config_parameter'].get_param('web.base.url')
         
         if banner_home is not None:
