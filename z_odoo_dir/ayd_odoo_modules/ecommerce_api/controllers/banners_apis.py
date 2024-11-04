@@ -68,3 +68,40 @@ class EcommerceBannerAPI(http.Controller):
             status=200,
             mimetype='application/json'
         )
+    
+    @http.route(['/apis/banners/about'], type='http', auth='public', methods=["GET"], website=True)
+    def get_banner_about(self, **params):
+        banner_about = http.request.env['website.site.banner'].sudo().search([('page', '=', 'about')])
+        about_pic = http.request.env['website.page.picture'].sudo().search([('page', '=', 'about')], limit=1)
+        base_url = http.request.env['ir.config_parameter'].get_param('web.base.url')
+        
+        curr_banner = {}
+        curr_about_pic = {}
+
+        if banner_about is not None:
+            curr_banner = {
+                'id': banner_about.id,
+                'name': banner_about.name,
+                'description': banner_about.description,
+                'picture': f"{base_url}{get_image_url(banner_about, 'picture')}",
+                'page': banner_about.page
+            }
+
+        if about_pic is not None:
+            curr_about_pic = {
+                'id': about_pic.id,
+                'picture': f"{base_url}{get_image_url(about_pic, 'picture')}",
+                'url': about_pic.url
+            }
+
+        res = {
+            "result": {
+                'banner': curr_banner,
+                'body': curr_about_pic
+            }
+        }
+        return http.Response(
+            json.dumps(res),
+            status=200,
+            mimetype='application/json'
+        )

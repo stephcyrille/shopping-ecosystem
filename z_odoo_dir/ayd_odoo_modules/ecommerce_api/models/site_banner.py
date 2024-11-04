@@ -25,6 +25,8 @@ class SiteBanner(models.Model):
         ('home', 'Home Page'),
         ('product', 'Product Page'),
         ('category', 'Category Page'),
+        ('contact', 'Contact Page'),
+        ('about', 'About Page'),
         ('custom', 'Custom Page')
     ], string='Page', required=True, default='home')
 
