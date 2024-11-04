@@ -188,7 +188,7 @@ else:
     ODOO_PASSWORD = os.environ.get('ODOO_PASSWORD')
     ODOO_DB = os.environ.get('ODOO_DB')
     if SECURED:
-        ODOO_SERVER_HOST = f"https://{os.environ.get('ODOO_SERVER_HOST')}"
+        ODOO_SERVER_HOST = f"https://{config('ODOO_SERVER_HOST')}"
     else:
-        ODOO_SERVER_HOST = f"http://{os.environ.get('ODOO_SERVER_HOST')}"
+        ODOO_SERVER_HOST = f"http://{config('ODOO_SERVER_HOST')}"
 
