@@ -60,13 +60,13 @@ services:
     command: "yarn start"   
     volumes:
       - ./afroyaca-frontend:/app
-      - /data/yarn_cache:/usr/local/share/.cache/yarn
+      - /app/node_modules
     ports:
       - "3000:3000"
     depends_on:
       - ayd_backend
-    environment:
-      - YARN_CACHE_FOLDER=/usr/local/share/.cache/yarn
+    env_file:
+      - ./afroyaca-frontend/.env.local
 
   # Nginx Reverse Proxy
   nginx:
