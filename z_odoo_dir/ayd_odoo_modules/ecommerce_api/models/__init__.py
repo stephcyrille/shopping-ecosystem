@@ -4,3 +4,4 @@ from . import home_collection
 from . import website_size
 from . import sale_order
 from . import website
+from . import page_picture

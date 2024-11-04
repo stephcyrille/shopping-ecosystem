@@ -32,14 +32,10 @@ Ecommerce REST API module: contains multiple routes
         "views/website_home_collection.xml",
         "views/website_size.xml",
         "views/product_template_size.xml",
+        "views/website_page_picture.xml",
     ],
-    'assets': {
-         # 'web.assets_frontend': [
-         #     "https://kit.fontawesome.com/b2b52c5522.js",
-         #     "/ecommerce_api/static/src/js/index.js",
-         # ]
-    },
+    'assets': {},
     'installable': True,
     'application': False
 }
-# -*- coding: utf-8 -*-
+

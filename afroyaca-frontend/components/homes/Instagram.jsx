@@ -1,7 +1,10 @@
-import React from "react";
+'use client'
+
+import React, {useState, useEffect} from "react";
 import Image from "next/image";
 
 export default function Instagram() {
+  const [instagramPictList, setInstagramPictList] = useState([])
   return (
     <section className="instagram container">
       <div className="row">
@@ -17,14 +20,16 @@ export default function Instagram() {
           </div>
           <div className="instagram__tile">
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/afroyacadrum_officiel/"
               target="_blank"
               className="position-relative overflow-hidden d-block effect overlay-plus"
             >
               <Image
                 loading="lazy"
                 className="instagram__img"
-                src="/assets/images/home/demo6/instagram1.jpg"
+                // loader={() => instagramPictList[2]}
+                unoptimized={true}
+                src={'/assets/images/home/demo6/instagram2.jpg'}
                 width="466"
                 height="525"
                 alt="Insta image 1"
@@ -35,14 +40,16 @@ export default function Instagram() {
         <div className="col-lg-4 px-0">
           <div className="instagram__tile">
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/afroyacadrum_officiel/"
               target="_blank"
               className="position-relative overflow-hidden d-block effect overlay-plus"
             >
               <Image
                 loading="lazy"
                 className="instagram__img"
-                src="/assets/images/home/demo6/instagram2.jpg"
+                // loader={() => instagramPictList[2]}
+                unoptimized={true}
+                src={'/assets/images/home/demo6/instagram2.jpg'}
                 width="466"
                 height="401"
                 alt="Insta image 2"
@@ -51,14 +58,16 @@ export default function Instagram() {
           </div>
           <div className="instagram__tile">
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/afroyacadrum_officiel/"
               target="_blank"
               className="position-relative overflow-hidden d-block effect overlay-plus"
             >
               <Image
                 loading="lazy"
                 className="instagram__img"
-                src="/assets/images/home/demo6/instagram3.jpg"
+                // loader={() => instagramPictList[2]}
+                unoptimized={true}
+                src={'/assets/images/home/demo6/instagram2.jpg'}
                 width="466"
                 height="401"
                 alt="Insta image 3"
@@ -69,14 +78,16 @@ export default function Instagram() {
         <div className="col-lg-4 px-0">
           <div className="instagram__tile">
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/afroyacadrum_officiel/"
               target="_blank"
               className="position-relative overflow-hidden d-block effect overlay-plus"
             >
               <Image
                 loading="lazy"
                 className="instagram__img"
-                src="/assets/images/home/demo6/instagram4.jpg"
+                // loader={() => instagramPictList[2]}
+                unoptimized={true}
+                src={'/assets/images/home/demo6/instagram2.jpg'}
                 width="466"
                 height="401"
                 alt="Insta image 4"
@@ -85,14 +96,16 @@ export default function Instagram() {
           </div>
           <div className="instagram__tile">
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/afroyacadrum_officiel/"
               target="_blank"
               className="position-relative overflow-hidden d-block effect overlay-plus"
             >
               <Image
                 loading="lazy"
                 className="instagram__img"
-                src="/assets/images/home/demo6/instagram5.jpg"
+                // loader={() => instagramPictList[2]}
+                unoptimized={true}
+                src={'/assets/images/home/demo6/instagram2.jpg'}
                 width="466"
                 height="401"
                 alt="Insta image 5"

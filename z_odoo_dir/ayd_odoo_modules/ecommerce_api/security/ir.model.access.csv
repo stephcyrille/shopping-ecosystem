@@ -2,3 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_website_site_banner,website.site.banner,model_website_site_banner,,1,1,1,1
 access_website_home_collection,website.home.collection,model_website_home_collection,,1,1,1,1
 access_website_size_custom,website.size.custom,model_website_size_custom,,1,1,1,1
+access_website_page_picture,website.page.picture,model_website_page_picture,,1,1,1,1

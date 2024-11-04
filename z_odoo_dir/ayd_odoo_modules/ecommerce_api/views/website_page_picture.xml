@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <record id="website_hpage_pictureform_view" model="ir.ui.view">
+        <field name="name">website.page.picture.form</field>
+        <field name="model">website.page.picture</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="page" widget="Label"/>
+                            <field name="url" widget="url" placeholder='http://website.com' />
+                        </group>
+                        <group>
+                            <field name="picture" widget="image"/>
+                        </group>
+                    </group>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+     <record id="website_page_picture_list_view" model="ir.ui.view">
+        <field name="name">website.page.picture.list</field>
+        <field name="model">website.page.picture</field>
+        <field name="arch" type="xml">
+            <tree string="Page picture list" multi_edit="1" sample="1">
+            <field name="page" />
+            <field name="url" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="website_page_picture_action" model="ir.actions.act_window">
+        <field name="name">Website home collection</field>
+        <field name="res_model">website.page.picture</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                There is no website page picture created yet.
+            </p>
+            <p>
+                You can create a website page picture now.
+            </p>
+        </field>
+    </record>
+    
+    <menuitem id="menu_website_page_picture"
+        parent="menu_site_advanced"
+        sequence="2"
+        name="Website pictures"
+        action="website_page_picture_action"/>
+
+  </data>
+</odoo>
