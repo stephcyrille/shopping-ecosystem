@@ -5,6 +5,23 @@ import Image from "next/image";
 
 export default function Instagram() {
   const [instagramPictList, setInstagramPictList] = useState([])
+
+
+  useEffect(() => {
+    async function fetchHomeCollectionList() {
+      let res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/apis/pictures/instagram`);
+      let res_data = await res.json();
+      let data = res_data.data.result;
+
+      if(data.length > 0){
+        console.log(data)
+        setInstagramPictList(data);
+      }
+    }
+    fetchHomeCollectionList();
+  }, [])
+
+
   return (
     <section className="instagram container">
       <div className="row">
@@ -18,100 +35,101 @@ export default function Instagram() {
               </p>
             </div>
           </div>
-          <div className="instagram__tile">
+          {instagramPictList[0] && <div className="instagram__tile">
             <a
-              href="https://www.instagram.com/afroyacadrum_officiel/"
+              href={instagramPictList[0].url}
               target="_blank"
               className="position-relative overflow-hidden d-block effect overlay-plus"
             >
               <Image
                 loading="lazy"
                 className="instagram__img"
-                // loader={() => instagramPictList[2]}
+                loader={() => instagramPictList[0].picture}
                 unoptimized={true}
-                src={'/assets/images/home/demo6/instagram2.jpg'}
+                src={instagramPictList[0].picture}
                 width="466"
                 height="525"
                 alt="Insta image 1"
               />
             </a>
-          </div>
+          </div>}
         </div>
         <div className="col-lg-4 px-0">
-          <div className="instagram__tile">
+          {instagramPictList[1] && <div className="instagram__tile">
             <a
-              href="https://www.instagram.com/afroyacadrum_officiel/"
+              href={instagramPictList[1].url}
               target="_blank"
               className="position-relative overflow-hidden d-block effect overlay-plus"
             >
               <Image
                 loading="lazy"
                 className="instagram__img"
-                // loader={() => instagramPictList[2]}
+                loader={() => instagramPictList[1].picture}
                 unoptimized={true}
-                src={'/assets/images/home/demo6/instagram2.jpg'}
+                src={instagramPictList[1].picture}
                 width="466"
                 height="401"
                 alt="Insta image 2"
               />
             </a>
-          </div>
-          <div className="instagram__tile">
+          </div>}
+
+          {instagramPictList[2] && <div className="instagram__tile">
             <a
-              href="https://www.instagram.com/afroyacadrum_officiel/"
+              href={instagramPictList[2].url}
               target="_blank"
               className="position-relative overflow-hidden d-block effect overlay-plus"
             >
               <Image
                 loading="lazy"
                 className="instagram__img"
-                // loader={() => instagramPictList[2]}
+                loader={() => instagramPictList[2].picture}
                 unoptimized={true}
-                src={'/assets/images/home/demo6/instagram2.jpg'}
+                src={instagramPictList[2].picture}
                 width="466"
                 height="401"
                 alt="Insta image 3"
               />
             </a>
-          </div>
+          </div>}
         </div>
         <div className="col-lg-4 px-0">
-          <div className="instagram__tile">
+          {instagramPictList[3] && <div className="instagram__tile">
             <a
-              href="https://www.instagram.com/afroyacadrum_officiel/"
+              href={instagramPictList[3].url}
               target="_blank"
               className="position-relative overflow-hidden d-block effect overlay-plus"
             >
               <Image
                 loading="lazy"
                 className="instagram__img"
-                // loader={() => instagramPictList[2]}
+                loader={() => instagramPictList[3].picture}
                 unoptimized={true}
-                src={'/assets/images/home/demo6/instagram2.jpg'}
+                src={instagramPictList[3].picture}
                 width="466"
                 height="401"
                 alt="Insta image 4"
               />
             </a>
-          </div>
-          <div className="instagram__tile">
+          </div>}
+          {instagramPictList[4] && <div className="instagram__tile">
             <a
-              href="https://www.instagram.com/afroyacadrum_officiel/"
+              href={instagramPictList[4].url}
               target="_blank"
               className="position-relative overflow-hidden d-block effect overlay-plus"
             >
               <Image
                 loading="lazy"
                 className="instagram__img"
-                // loader={() => instagramPictList[2]}
+                loader={() => instagramPictList[4].picture}
                 unoptimized={true}
-                src={'/assets/images/home/demo6/instagram2.jpg'}
+                src={instagramPictList[4].picture}
                 width="466"
-                height="401"
+                height="431"
                 alt="Insta image 5"
               />
             </a>
-          </div>
+          </div>}
         </div>
       </div>
     </section>
