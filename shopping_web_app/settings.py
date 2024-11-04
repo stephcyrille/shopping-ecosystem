@@ -27,6 +27,7 @@ SECRET_KEY = 'django-insecure-0^2daphvdd+_tq=8bmj4q8s)%n((_vl6s=57j*l_skne+4gh0p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 ALLOWED_HOSTS = []
+SECURED = False
 
 if 'DEV' == config('MYENV'):
     DEBUG = True
@@ -46,14 +47,14 @@ if 'PROD' == config('MYENV'):
     # Allow CORS
     CORS_ALLOW_CREDENTIALS = True
     CORS_ALLOWED_ORIGINS = [
-        "http://afroyacadrum.com",
-        "http://odoo.afroyacadrum.com",
-        "http://apis.afroyacadrum.com",
+        "https://afroyacadrum.com",
+        "https://odoo.afroyacadrum.com",
+        "https://apis.afroyacadrum.com",
     ]
+    SECURED = True
 
     
 # If we are in production ENV and we are using https, then set secured to true 
-SECURED = False
 
 
 # Application definition
@@ -182,11 +183,12 @@ if DEBUG:
     ODOO_PASSWORD = config('ODOO_PASSWORD')
     ODOO_DB = config('ODOO_DB')
 else:
-    ODOO_SERVER_HOST = f"http://{os.environ.get('ODOO_SERVER_HOST')}"
     ODOO_SERVER_PORT = os.environ.get('ODOO_SERVER_PORT')
     ODOO_USER = os.environ.get('ODOO_USER')
     ODOO_PASSWORD = os.environ.get('ODOO_PASSWORD')
     ODOO_DB = os.environ.get('ODOO_DB')
     if SECURED:
         ODOO_SERVER_HOST = f"https://{os.environ.get('ODOO_SERVER_HOST')}"
+    else:
+        ODOO_SERVER_HOST = f"http://{os.environ.get('ODOO_SERVER_HOST')}"
 
