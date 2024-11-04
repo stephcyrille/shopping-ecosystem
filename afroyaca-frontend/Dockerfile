@@ -4,11 +4,14 @@ FROM node:20.9.0
 # Set working directory
 WORKDIR /app
 
-# Copy dependencies files first for better caching
-COPY . .
+# Copy package.json and yarn.lock to leverage Docker caching
+COPY package*.json yarn.lock ./
 
 # Install dependencies
 RUN yarn install 
+
+# Copy the entire app after installing dependencies
+COPY . .
 
 # Build the Next.js app
 RUN yarn build
