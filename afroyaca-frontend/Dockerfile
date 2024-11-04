@@ -9,15 +9,9 @@ COPY package*.json yarn.lock ./
 
 # Install dependencies
 RUN yarn install 
-RUN echo "Before copy"
-RUN ls -la
 
 # Copy the entire app after installing dependencies
-COPY . .
-
-RUN echo "=============="
-RUN echo "After copy"
-RUN ls -la
+COPY . /app
 
 # Build the Next.js app
 RUN yarn build
