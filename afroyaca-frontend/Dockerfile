@@ -10,11 +10,11 @@ COPY package*.json yarn.lock ./
 # Install dependencies
 RUN yarn install 
 
-# Copy the entire app after installing dependencies
-COPY . .
-
 # Build the Next.js app
 RUN yarn build
+
+# Copy the entire app after installing dependencies
+COPY . .
 
 # Expose the Next.js port
 EXPOSE 3000
