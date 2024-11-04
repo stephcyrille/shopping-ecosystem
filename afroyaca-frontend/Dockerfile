@@ -5,8 +5,7 @@ FROM node:20.9.0
 WORKDIR /app
 
 # Copy dependencies files first for better caching
-COPY package*.json .
-COPY yarn.lock .
+COPY . .
 
 # Install dependencies
 RUN yarn install 
