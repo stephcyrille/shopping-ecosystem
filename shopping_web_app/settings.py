@@ -38,6 +38,19 @@ if 'DEV' == config('MYENV'):
         "http://localhost:8000",  # Backend Django
         "http://localhost:9500",  # Backend Odoo
     ]
+
+if 'PROD' == config('MYENV'):
+    DEBUG = False
+    ALLOWED_HOSTS = ["afroyacadrum.com", "odoo.afroyacadrum.com", "apis.afroyacadrum.com"]
+
+    # Allow CORS
+    CORS_ALLOW_CREDENTIALS = True
+    CORS_ALLOWED_ORIGINS = [
+        "http://afroyacadrum.com",
+        "http://odoo.afroyacadrum.com",
+        "http://apis.afroyacadrum.com",
+    ]
+
     
 # If we are in production ENV and we are using https, then set secured to true 
 SECURED = False
