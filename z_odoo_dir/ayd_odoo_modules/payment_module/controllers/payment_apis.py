@@ -43,8 +43,9 @@ def get_image_url(record, field, size=None):
 class PaymentNotchPayAPI(http.Controller):
     @http.route(['/apis/payment/init'], type='json', auth="public", methods=['POST'], website=True, csrf=False)
     def initialize_payment(self, **kwargs):
+        is_live = http.request.env['ir.config_parameter'].sudo().get_param('website.is_live', default=None)
         apiKey = http.request.env['ir.config_parameter'].sudo().get_param(
-            'website.prod_api_key' if API_IS_LIVE else 'website.dev_api_key', default=None)
+            'website.prod_api_key' if is_live else 'website.dev_api_key', default=None)
         json_data = json.loads(http.request.httprequest.data)
         print('\n\n\n')
         print(apiKey)
@@ -160,8 +161,9 @@ class PaymentNotchPayAPI(http.Controller):
         
     @http.route(['/apis/payment/proceed'], type='json', auth="public", methods=['POST'], website=True, csrf=False)
     def procceed_payment(self, **kwargs):
+        is_live = http.request.env['ir.config_parameter'].sudo().get_param('website.is_live', default=None)
         apiKey = http.request.env['ir.config_parameter'].sudo().get_param(
-            'website.prod_api_key' if API_IS_LIVE else 'website.dev_api_key', default=None)
+            'website.prod_api_key' if is_live else 'website.dev_api_key', default=None)
         json_data = json.loads(http.request.httprequest.data)
 
         reference = json_data.get('reference') if json_data.get('reference') else None
@@ -295,8 +297,9 @@ class PaymentNotchPayAPI(http.Controller):
     
     @http.route(['/apis/payment/proceed/confirm'], type='http', auth="public", methods=['POST'], website=True, csrf=False)
     def confirm_notch_payment(self, **kwargs):
+        is_live = http.request.env['ir.config_parameter'].sudo().get_param('website.is_live', default=None)
         apiSecret = http.request.env['ir.config_parameter'].sudo().get_param(
-            'website.prod_secret_key' if API_IS_LIVE else 'website.dev_secret_key', default=None)
+            'website.prod_secret_key' if is_live else 'website.dev_secret_key', default=None)
         json_data = json.loads(http.request.httprequest.data)
 
         signature = http.request.httprequest.headers.get('x-notch-signature')
