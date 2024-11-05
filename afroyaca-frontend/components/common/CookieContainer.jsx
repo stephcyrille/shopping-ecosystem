@@ -12,14 +12,15 @@ export default function CookieContainer() {
           style={{ opacity: 1, display: "block" }}
         >
           <div className="cookieDesc">
-            <p>
-              In order to provide you a personalized shopping experience, our
-              site uses cookies. By continuing to use this site, you are
-              agreeing to our cookie policy.
+            <p style={{ textAlign: 'justify' }}>
+              {"Afin de pouvoir vous proposer une expérience d'achat personalisée, \
+              notre site utilise les Cookies. En continuant d'utiliser ce site, \
+              vous acceptez nos conditions"}
             </p>
           </div>
           <div className="cookieButton">
-            <a onClick={() => setShow(false)}>Accept</a>
+            <a className="my-2" onClick={() => setShow(false)}>{"Accepter"}</a>
+            <a onClick={() => setShow(false)}>{"Refuser"}</a>
           </div>
         </div>
       )}

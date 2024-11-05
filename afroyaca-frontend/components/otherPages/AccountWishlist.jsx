@@ -123,7 +123,7 @@ export default function AccountWishlist() {
             ))}
           </div>
         ) : (
-          <div className="fs-18">No products added to wishlist yet</div>
+          <div className="fs-18">{'Aucun produit dans la liste de souhaits'}</div>
         )}
         {/* <!-- /.products-grid row --> */}
       </div>
