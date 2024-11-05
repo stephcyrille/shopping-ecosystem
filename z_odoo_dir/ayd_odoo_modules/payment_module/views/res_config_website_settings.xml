@@ -18,21 +18,33 @@
                 The customer sandbox API key.
               </div>
               <div class="content-group">
-                <div class="row mt16">
+                <div class="row">
                   <label for="dev_api_key" class="col-lg-3 o_light_label">Dev key</label>
                   <field name="dev_api_key" readonly="False"/>
                 </div>
               </div>
             </div>
-            <div class="o_setting_right_pane">
+            <div class="o_setting_right_pane mt16">
               <span class="o_form_label">Dev Secret Key</span>
               <div class="text-muted">
                 The customer sandbox Secret key.
               </div>
               <div class="content-group">
-                <div class="row mt16">
+                <div class="row">
                   <label for="dev_secret_key" class="col-lg-3 o_light_label">Dev secret</label>
                   <field name="dev_secret_key" readonly="False"/>
+                </div>
+              </div>
+            </div>
+            <div class="o_setting_right_pane mt16">
+              <span class="o_form_label">The Live mode is set ?</span>
+              <div class="text-muted">
+                Set the mode of the API.
+              </div>
+              <div class="content-group">
+                <div class="row">
+                  <label for="is_live" class="col-lg-3 o_light_label">Is API Live</label>
+                  <field name="is_live" readonly="False"/>
                 </div>
               </div>
             </div>
@@ -45,19 +57,19 @@
                 The customer Live API key.
               </div>
               <div class="content-group">
-                <div class="row mt16">
+                <div class="row">
                   <label for="prod_api_key" class="col-lg-3 o_light_label">Live key</label>
                   <field name="prod_api_key" readonly="False"/>
                 </div>
               </div>
             </div>
-            <div class="o_setting_right_pane">
+            <div class="o_setting_right_pane mt16">
               <span class="o_form_label">Production Secret API Key</span>
               <div class="text-muted">
                 The customer Live Secret key.
               </div>
               <div class="content-group">
-                <div class="row mt16">
+                <div class="row">
                   <label for="prod_secret_key" class="col-lg-3 o_light_label">Live secret</label>
                   <field name="prod_secret_key" readonly="False"/>
                 </div>

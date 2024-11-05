@@ -10,6 +10,7 @@ class ResConfigSettings(models.TransientModel):
     prod_api_key = fields.Char(string="Live API Key")
     dev_secret_key = fields.Char(string="Secret API Key")
     prod_secret_key = fields.Char(string="Secret Live API Key")
+    is_live = fields.Boolean(string="Is Live mode")
 
     def set_values(self):
         super(ResConfigSettings, self).set_values()
@@ -17,6 +18,7 @@ class ResConfigSettings(models.TransientModel):
         self.env['ir.config_parameter'].sudo().set_param('website.prod_api_key', self.prod_api_key)
         self.env['ir.config_parameter'].sudo().set_param('website.dev_secret_key', self.dev_secret_key)
         self.env['ir.config_parameter'].sudo().set_param('website.prod_secret_key', self.prod_secret_key)
+        self.env['ir.config_parameter'].sudo().set_param('website.is_live', self.is_live)
 
     def get_values(cls):
         res = super(ResConfigSettings, cls).get_values()
@@ -25,6 +27,7 @@ class ResConfigSettings(models.TransientModel):
             'prod_api_key': cls.env['ir.config_parameter'].sudo().get_param('website.prod_api_key', default=''),
             'dev_secret_key': cls.env['ir.config_parameter'].sudo().get_param('website.dev_secret_key', default=''),
             'prod_secret_key': cls.env['ir.config_parameter'].sudo().get_param('website.prod_secret_key', default=''),
+            'is_live': cls.env['ir.config_parameter'].sudo().get_param('website.is_live', default=''),
         })
         return res
     
