@@ -1,3 +1,5 @@
+# Dockerfile
+
 # Base image
 FROM python:3.11-slim
 
@@ -17,9 +19,15 @@ COPY . /app/
 # Install any needed packages specified in requirements.txt
 RUN pip install -r requirements.txt
 
+# Install Gunicorn
+RUN pip install gunicorn
+
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Run Django migrations and start the server
-CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+# Collect static files for Nginx to serve
+RUN python manage.py collectstatic --noinput
+
+# Run Gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "shopping_web_app.wsgi:application"]
