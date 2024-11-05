@@ -99,3 +99,5 @@ commands
 z_odoo_dir/data
 z_postgres-data/django
 z_postgres-data/odoo
+# SSL validator file
+612ECFE5BB5AA3179CCCCC5E6710CDC5.txt
