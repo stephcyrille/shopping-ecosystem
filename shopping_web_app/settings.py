@@ -189,8 +189,8 @@ ODOO_DB = config('ODOO_DB')
 if DEBUG:
     ODOO_SERVER_HOST = f"http://{config('ODOO_SERVER_HOST')}"
 else:
-    if SECURED:
-        ODOO_SERVER_HOST = f"https://{config('ODOO_SERVER_HOST')}"
-    else:
-        ODOO_SERVER_HOST = f"http://{config('ODOO_SERVER_HOST')}"
+    # if SECURED:
+    #     ODOO_SERVER_HOST = f"https://{config('ODOO_SERVER_HOST')}"
+    # else:
+    ODOO_SERVER_HOST = f"http://{config('ODOO_SERVER_HOST')}"
 
