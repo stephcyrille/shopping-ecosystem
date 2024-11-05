@@ -13,16 +13,13 @@
 import json
 from odoo import http
 from ..utils.image_lib import get_image_url
-import logging
-
-_logger = logging.getLogger(__name__)
 
 
 class EcommerceBannerAPI(http.Controller):
     @http.route(['/apis/banners/home'], type='http', auth='public', methods=["GET"], website=True)
     def get_banner_home(self, **params):
         banner_home = http.request.env['website.site.banner'].sudo().search([('page', '=', 'home')], limit=1)
-        base_url = http.request.env['ir.config_parameter'].get_param('web.base.url')
+        base_url = http.request.env['ir.config_parameter'].sudo().get_param('web.base.url')
         
         if banner_home is not None:
             curr_banner = {
@@ -47,7 +44,7 @@ class EcommerceBannerAPI(http.Controller):
     @http.route(['/apis/banners/shop'], type='http', auth='public', methods=["GET"], website=True)
     def get_banner_shoplist(self, **params):
         banner_shop = http.request.env['website.site.banner'].sudo().search([('page', '=', 'product')])
-        base_url = http.request.env['ir.config_parameter'].get_param('web.base.url')
+        base_url = http.request.env['ir.config_parameter'].sudo().get_param('web.base.url')
         
         if banner_shop is not None:
             curr_banner = {
@@ -73,7 +70,7 @@ class EcommerceBannerAPI(http.Controller):
     def get_banner_about(self, **params):
         banner_about = http.request.env['website.site.banner'].sudo().search([('page', '=', 'about')])
         about_pic = http.request.env['website.page.picture'].sudo().search([('page', '=', 'about')], limit=1)
-        base_url = http.request.env['ir.config_parameter'].get_param('web.base.url')
+        base_url = http.request.env['ir.config_parameter'].sudo().get_param('web.base.url')
         
         curr_banner = {}
         curr_about_pic = {}
