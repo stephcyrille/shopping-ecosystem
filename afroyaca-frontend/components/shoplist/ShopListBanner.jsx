@@ -121,7 +121,7 @@ export default function ShopListBanner() {
 
       {/* <!-- /.slideshow-wrapper js-swiper-slider --> */}
 
-      <div className="container p-3 p-xl-5">
+      <div className="container pt-3 p-xl-5">
         <div className="slideshow-pagination d-flex align-items-center position-absolute bottom-0 mb-4 pb-xl-2"></div>
         {/* <!-- /.products-pagination --> */}
       </div>
