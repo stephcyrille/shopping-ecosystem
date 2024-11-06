@@ -20,13 +20,43 @@ import { formatNumber } from '@/utlis/nber_parsing';
 
 const itemPerRow = [2, 3, 4];
 
+const overlayStyle = {
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: 'rgba(255, 255, 255, 0.8)',
+  zIndex: 1000,
+};
+
+const spinnerStyle = {
+  width: '60px',
+  height: '60px',
+  border: '5px solid black',
+  borderTop: '5px solid red',
+  borderRadius: '50%',
+  animation: 'spin 1s linear infinite',
+};
+
+const keyframes = `
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
 
 export default function ShopListContainer() {
   const { toggleWishlist, isAddedtoWishlist, setCartProducts, isAddedToCartProducts } = useContextElement();
+  const { currency } = useCurrency();
   const [selectedColView, setSelectedColView] = useState(3);
   const [productList, setProductList] = useState([]);
-  const { currency } = useCurrency();
-
+  const [loading, setLoading] = useState(false);
+  
   // Filters states
   const [selectedCategory, setSelectedCategory] = useState([]);  // Catégories sélectionnées
   const [selectedColor, setSelectedColor] = useState(null);      // Couleur sélectionnée
@@ -34,11 +64,9 @@ export default function ShopListContainer() {
   const [filteredProducts, setFilteredProducts] = useState([]);  // Produits filtrés
 
 
-  const [isDev, setIsDev] = useState([false]);
-
   useEffect(() => {
     async function fetchProductList() {
-
+        setLoading(true);
         try {
           let res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/apis/products/list`, {
             method: 'GET',
@@ -75,24 +103,25 @@ export default function ShopListContainer() {
 
             setProductList(products);
             setFilteredProducts(products);
+            setLoading(false);
           }
         } catch (error) {
           console.error("Failed to fetch product list:", error);
+          setLoading(false);
         }
     }
 
     fetchProductList();
-    setIsDev(false);
 }, []);
 
 // Applying filter list in product list
   useEffect(() => {
     let filtered = productList.filter((product) => {
-      const categoryMatch = selectedCategory.length === 0 || selectedCategory.includes(product.category);
+      const categoryMatch = selectedCategory.length === 0 || selectedCategory.some(category => category.name === product.category);
       const colorMatch = !selectedColor || (product.colors && product.colors.includes(selectedColor.color));
       const priceMatch = product.price >= selectedPriceRange[0] && product.price <= selectedPriceRange[1];
       // return categoryMatch && colorMatch && priceMatch;
-      return priceMatch;
+      return categoryMatch && priceMatch;
     });
 
     setFilteredProducts(filtered);  // Mettre à jour les produits filtrés
@@ -100,13 +129,26 @@ export default function ShopListContainer() {
 
   // Update filters
   const handleFilterChange = (categories, color, priceRange) => {
-    setSelectedCategory(categories);
-    setSelectedColor(color);
-    setSelectedPriceRange(priceRange);
+    setLoading(true);
+    setTimeout(() => {
+      setSelectedCategory(categories);
+      setSelectedColor(color);
+      setSelectedPriceRange(priceRange);
+      setLoading(false);
+    }, 1000);
   };
 
   const handleAddToCart = async (elt) => {
+    setLoading(true);
     if (isAddedToCartProducts(elt.id)){
+      
+      setTimeout(() => {
+        document
+          .getElementById("cartDrawerOverlay")
+          .classList.add("page-overlay_visible");
+        document.getElementById("cartDrawer").classList.add("aside_visible");
+        setLoading(false);
+      }, 1000);
       return;
     }
     let postData = {
@@ -140,21 +182,35 @@ export default function ShopListContainer() {
         }
         setCartProducts((pre) => [...pre, item]);
         document
-          .getElementById("cartDrawerOverlay")
-          .classList.add("page-overlay_visible");
+        .getElementById("cartDrawerOverlay")
+        .classList.add("page-overlay_visible");
         document.getElementById("cartDrawer").classList.add("aside_visible");
+        
+        setLoading(false);
       } else if (res_data.data.error.data) {
         console.error(res_data.data.error.data.message)
+        setLoading(false);
       } else {
         console.log('Another problem', res_data.data)
+        setLoading(false);
       }
     } catch (error) {
+      setLoading(false);
       console.error("Failed to add item to cart:", error);
     }
   };
 
   return (
-    <section className="shop-main container d-flex pt-4 pt-xl-5">
+    <>    
+    <style>{keyframes}</style>  {/* Keyframes for loader animation */}
+      
+      {loading && (
+        <div style={overlayStyle}>
+          <div style={spinnerStyle}></div>
+        </div>
+      )}
+    <section className={`shop-main container d-flex pt-4 pt-xl-5 `}>
+      {/* Loader */}
       <div className="shop-sidebar side-sticky bg-body">
         <div
           onClick={openModalShopFilter}
@@ -166,7 +222,7 @@ export default function ShopListContainer() {
 
         <div className="pt-4 pt-lg-0"></div>
 
-        <FilterAll onFilterChange={handleFilterChange} />
+        {productList.length > 0 && <FilterAll onFilterChange={handleFilterChange} products={productList} />}
       </div>
 
       <div className="shop-list flex-grow-1">
@@ -243,7 +299,7 @@ export default function ShopListContainer() {
           id="products-grid"
         >
           {filteredProducts.map((elm, i) => (
-            <div key={i} className="product-card-wrapper">
+            <div key={elm.id} className="product-card-wrapper">
               <div className="product-card mb-3 mb-md-4 mb-xxl-5">
                 <div className="pc__img-wrapper">
                   <Swiper
@@ -389,8 +445,9 @@ export default function ShopListContainer() {
         </div>
         {/* <!-- /.products-grid row --> */}
 
-        <Pagination2 />
+        {/* <Pagination2 /> */}
       </div>
     </section>
+    </>
   );
 }

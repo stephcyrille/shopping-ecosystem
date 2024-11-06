@@ -8,33 +8,30 @@ import Slider from "rc-slider";
 import { useCurrency } from "@/context/CurrencyContext";
 import { formatNumber } from "@/utlis/nber_parsing";
 
-export default function FilterAll({ onFilterChange }) {
+export default function FilterAll({ onFilterChange, products }) {
   const [activeColor, setActiveColor] = useState(colors[0]);
   const [activeCategory, setActiveCategory] = useState([]);
   const [filterFacts, setFilterFacts] = useState([]);
   const [categoriesList, setCategoriesList] = useState([]);
   const [price, setPrice] = useState([0, 100000]);
-  const [isDev, setIsDev] = useState([false])
   const { currency } = useCurrency();
 
   useEffect(() => {
-    async function fetchCategoriesList() {
-      let res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/apis/products/categories`);
-      let res_data = await res.json();
-      let data = res_data.data.result;
-      if(data.length > 0){
-        let sortedVals = data.slice(0);
-        sortedVals.sort(function(a,b) {
-          let x = a.name.toLowerCase();
-          let y = b.name.toLowerCase();
-          return x < y ? -1 : x > y ? 1 : 0;
-        })
-        setCategoriesList(sortedVals);
-      }
+    if (products && products.length > 0) {
+      let categories = getCategoryCounts(products);
+      let values = [];
+      categories.map((elt) => {
+        let current = {
+          name: elt.category,
+          label: elt.category,
+          total: elt.productCount,
+        }
+        values.push(current);
+      });
       
+      setCategoriesList(values);
     }
-    fetchCategoriesList();
-    setIsDev(false);
+
   }, [])
 
   useEffect(() => {
@@ -56,6 +53,25 @@ export default function FilterAll({ onFilterChange }) {
         { id: (pre.length + 1), label: category.name },
       ])
     }
+  };
+
+  const getCategoryCounts = (products) => {
+    const categoryCounts = {};
+  
+    products.forEach(product => {
+      const category = product.category;
+      if (categoryCounts[category]) {
+        categoryCounts[category]++;
+      } else {
+        categoryCounts[category] = 1;
+      }
+    });
+  
+    // Convert the categoryCounts object to an array of category objects
+    return Object.keys(categoryCounts).map(categoryName => ({
+      category: categoryName,
+      productCount: categoryCounts[categoryName]
+    }));
   };
 
   // price range handler
@@ -102,7 +118,9 @@ export default function FilterAll({ onFilterChange }) {
                 {categoriesList && categoriesList.map((elm, i) => (
                     <li
                       key={i}
-                      onClick={() => toggleCategories(elm)}
+                      onClick={() => {
+                        toggleCategories(elm)}
+                      }
                       className={`search-suggestion__item multi-select__item text-primary js-search-select js-multi-select ${
                         activeCategory.includes(elm)
                           ? "mult-select__item_selected"
@@ -110,7 +128,7 @@ export default function FilterAll({ onFilterChange }) {
                       }`}
                     >
                       <span className="me-auto">{elm.name}</span>
-                      <span className="text-secondary">{0}</span>
+                      <span className="text-secondary">{elm.total}</span>
                     </li>
                   ))}
               </ul>
