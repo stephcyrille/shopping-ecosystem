@@ -40,7 +40,7 @@ export default function CategoryMassonry() {
               <div className="pb-4 mb-4 pb-xl-5 mb-xl-5"></div>
               {collectionList.length > 0 && 
                 <>
-                  <div className="category-masonry__item">
+                  {collectionList[0] && <div className="category-masonry__item">
                     <div className="category-masonry__item-image pb-1 mb-4">
                       <Image
                         loading="lazy"
@@ -63,9 +63,9 @@ export default function CategoryMassonry() {
                     <div className="category-masonry__item-category fw-medium">
                       {collectionList[0].label.toUpperCase()}
                     </div>
-                  </div>
+                  </div>}
                   <div className="pb-4 mb-4 pb-xl-5 mb-xl-5 pt-4 mt-4 pt-xl-5 mt-xl-5"></div>
-                  <div className="category-masonry__item">
+                  {collectionList[1] && <div className="category-masonry__item">
                     <div className="category-masonry__item-image pb-1 mb-4">
                       <Image
                         loading="lazy"
@@ -88,9 +88,9 @@ export default function CategoryMassonry() {
                     <div className="category-masonry__item-category fw-medium">
                       {collectionList[1].label.toUpperCase()}
                     </div>
-                  </div>
+                  </div>}
                   <div className="pb-4 mb-4 pb-xl-5 mb-xl-5 pt-4 mt-4 pt-xl-5 mt-xl-5"></div>
-                  <div className="category-masonry__item">
+                  {collectionList[2] && <div className="category-masonry__item">
                     <div className="category-masonry__item-image pb-1 mb-4">
                       <Image
                         loading="lazy"
@@ -113,9 +113,9 @@ export default function CategoryMassonry() {
                     <div className="category-masonry__item-category fw-medium">
                       {collectionList[2].label.toUpperCase()}
                     </div>
-                  </div>
+                  </div>}
                   <div className="pb-4 mb-4 pb-xl-5 mb-xl-5 pt-4 mt-4 pt-xl-5 mt-xl-5"></div>
-                  <div className="category-masonry__item">
+                  {collectionList[3] && <div className="category-masonry__item">
                     <div className="category-masonry__item-image pb-1 mb-4">
                       <Image
                         loading="lazy"
@@ -138,7 +138,7 @@ export default function CategoryMassonry() {
                     <div className="category-masonry__item-category fw-medium">
                       {collectionList[3].label.toUpperCase()}
                     </div>
-                  </div>
+                  </div>}
                   <div className="pb-4 mb-4 pb-xl-5 mb-xl-5 pt-4 mt-4 pt-xl-5 mt-xl-5"></div>
                 </>
               }
