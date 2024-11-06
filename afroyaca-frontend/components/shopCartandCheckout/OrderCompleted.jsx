@@ -5,6 +5,7 @@ import { useContextElement } from "@/context/Context";
 import { useEffect, useState } from "react";
 import { useCurrency } from "@/context/CurrencyContext";
 import { formatNumber } from "@/utlis/nber_parsing";
+import { Loader } from '../common/Loader';
 
 export default function OrderCompleted() {
   const router = useRouter();
@@ -13,8 +14,10 @@ export default function OrderCompleted() {
   const [paiement, setPaiement] = useState(null);
   const { currency } = useCurrency();
   const [pageData, setPageData] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     setShowDate(true);
     // Add overflow: scroll !important to the root <html> element
     document.documentElement.style.setProperty('overflow', 'scroll', 'important');
@@ -41,11 +44,13 @@ export default function OrderCompleted() {
     } else {
       router.push('/');
     }
+    setLoading(false);
   }, []);
 
   return (
     checkoutStep === 3 && 
       <>
+        <Loader isLoading={loading} />
         {pageData ? 
           <div className="order-complete text-center">            
             <div className="order-complete__message">

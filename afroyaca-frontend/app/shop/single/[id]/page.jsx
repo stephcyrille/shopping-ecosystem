@@ -31,8 +31,15 @@ export async function generateMetadata({ params }) {
   }
 
   return {
-    title: `${product.name} | Afro Yaca Drum - Boutique en ligne`,
-    description: product.description || "Discover our exclusive range of products at Uomo eCommerce.",
+    title: product.name,
+    description: product.description,
+    openGraph: {
+      title: product.name,
+      description: product.description,
+      url: "https://afroyacadrum.com",  // Replace with the actual URL of your website
+      type: "website",
+      images: product.image_list && product.image_list[0].image_url,
+    },
   };
 }
 

@@ -5,10 +5,20 @@ import Clients from "@/components/otherPages/about/Clients";
 import Services from "@/components/otherPages/about/Services";
 import React from "react";
 
-export const metadata = {
-  title: "A propos de nous | Afro Yaca Boutique en ligne",
-  description: "Achétez tous les produits Afro Chic made by Afro Yaca dans notre boutique en ligne",
-};
+export async function generateMetadata({ params }) {
+  return {
+    title: "A propos de nous | Afro Yaca Boutique en ligne",
+    description: "Achétez tous les produits Afro Chic made by Afro Yaca dans notre boutique en ligne",
+    openGraph: {
+      title: "A propos de nous | Afro Yaca Boutique en ligne",
+      description: "Achétez tous les produits Afro Chic made by Afro Yaca dans notre boutique en ligne",
+      url: "https://afroyacadrum.com",  // Replace with the actual URL of your website
+      type: "website",
+      images: "/assets/images/logo-ayd.jpg",
+    }
+  };
+}
+
 export default function AboutPage() {
   return (
     <>

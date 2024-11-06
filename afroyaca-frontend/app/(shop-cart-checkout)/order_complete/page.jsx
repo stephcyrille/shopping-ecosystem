@@ -17,7 +17,7 @@ export default function () {
       <main className="page-wrapper">
         <div className="mb-4 pb-4"></div>
         <section className="shop-checkout container">
-          <h2 className="page-title">COMMANDE REÇUE</h2>
+          <h2 className="page-title">{"COMMANDE REÇUE"}</h2>
           <ChectoutSteps />
           <OrderCompleted />
         </section>

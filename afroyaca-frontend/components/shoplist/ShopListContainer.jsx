@@ -17,38 +17,9 @@ import { openModalShopFilter } from "@/utlis/aside";
 import { sortingOptions } from "@/data/products/productCategories";
 import FilterAll from "./filter/FilterAll";
 import { formatNumber } from '@/utlis/nber_parsing';
+import { Loader } from '../common/Loader';
 
 const itemPerRow = [2, 3, 4];
-
-const overlayStyle = {
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: 'rgba(255, 255, 255, 0.8)',
-  zIndex: 1000,
-};
-
-const spinnerStyle = {
-  width: '60px',
-  height: '60px',
-  border: '5px solid black',
-  borderTop: '5px solid red',
-  borderRadius: '50%',
-  animation: 'spin 1s linear infinite',
-};
-
-const keyframes = `
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-`;
-
 
 export default function ShopListContainer() {
   const { toggleWishlist, isAddedtoWishlist, setCartProducts, isAddedToCartProducts } = useContextElement();
@@ -202,13 +173,7 @@ export default function ShopListContainer() {
 
   return (
     <>    
-    <style>{keyframes}</style>  {/* Keyframes for loader animation */}
-      
-      {loading && (
-        <div style={overlayStyle}>
-          <div style={spinnerStyle}></div>
-        </div>
-      )}
+    <Loader isLoading={loading} />
     <section className={`shop-main container d-flex pt-4 pt-xl-5 `}>
       {/* Loader */}
       <div className="shop-sidebar side-sticky bg-body">

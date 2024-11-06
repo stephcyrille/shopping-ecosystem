@@ -7,6 +7,7 @@ import { useCurrency } from "@/context/CurrencyContext";
 import { formatNumber } from "@/utlis/nber_parsing";
 import Image from "next/image";
 import PaymentModal from "../modals/PaymentModal";
+import { Loader } from "../common/Loader";
 
 const countries = [
   "Cameroun",
@@ -43,13 +44,19 @@ export default function Checkout() {
   const [isLoading, setIsLoading] = useState(false);
   const [phoneConfirmed, setPhoneConfirmed] = useState(false);
   const [serverMsg, setServerMsg] = useState(null);
+  const [loading, setLoading] = useState(false);
   
   useEffect(()=>{
-    if(checkoutStep === 1){
+    setLoading(true);
+    if(checkoutStep === 1 || checkoutStep === 0){
       router.push('/cart');
     } else if (checkoutStep === 3){
       router.push('/cart');
     }
+
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000)
   }, []);
 
   useEffect(() => {
@@ -132,6 +139,7 @@ export default function Checkout() {
     if (validateFormPhoneConfirm()) {
       setPhoneConfirmed(true);
       setIsLoading(true);
+      setLoading(true);
 
       let user = null;
       let data = {
@@ -187,10 +195,12 @@ export default function Checkout() {
           }
         }
         setIsLoading(false);
+        setLoading(false);
         return result; // Return the result or handle it as needed
       } catch (error) {
         console.error("Payment failed:", error);
         setIsLoading(false);
+        setLoading(false);
       }
       
     } else {
@@ -200,6 +210,7 @@ export default function Checkout() {
 
   return (
     <>
+      <Loader isLoading={loading} />
       {checkoutStep === 2 && <>
         <PaymentModal 
           isOpen={isModalOpen} 

@@ -2,13 +2,22 @@ import FooterAll from "@/components/footers/FooterAll";
 import Header from "@/components/headers/Header";
 import Contact from "@/components/otherPages/Contact/Contact";
 import LocationMap from "@/components/otherPages/Contact/LocationMap";
-
 import React from "react";
 
-export const metadata = {
-  title: "Contactez-nous | Afro Yaca Boutique en ligne",
-  description: "Achétez tous les produits Afro Chic made by Afro Yaca dans notre boutique en ligne",
-};
+export async function generateMetadata({ params }) {
+  return {
+    title: "Contactez-nous | Afro Yaca Boutique en ligne",
+    description: "Achétez tous les produits Afro Chic made by Afro Yaca dans notre boutique en ligne",
+    openGraph: {
+      title: "Contactez-nous | Afro Yaca Boutique en ligne",
+      description: "Achétez tous les produits Afro Chic made by Afro Yaca dans notre boutique en ligne",
+      url: "https://afroyacadrum.com",  // Replace with the actual URL of your website
+      type: "website",
+      images: "/assets/images/logo-ayd.jpg",
+    }
+  };
+}
+
 export default function ContactPage() {
   return (
     <>

@@ -4,11 +4,21 @@ import Header from "@/components/headers/Header";
 import ShopListContainer from "@/components/shoplist/ShopListContainer";
 import React from "react";
 
-export const metadata = {
-  title: "Boutique | Afro Yaca Boutique en ligne",
-  description: "Achétez tous les produits Afro Chic made by Afro Yaca dans notre boutique en ligne",
-};
-export default function ShopPage6() {
+export async function generateMetadata({ params }) {
+  return {
+    title: "Boutique | Afro Yaca Boutique en ligne",
+    description: "Achétez tous les produits Afro Chic made by Afro Yaca dans notre boutique en ligne",
+    openGraph: {
+      title: "Afro Yaca Drum | Boutique en ligne",
+      description: "Achétez tous les produits Afro Chic made by Afro Yaca dans notre boutique en ligne",
+      url: "https://afroyacadrum.com",  // Replace with the actual URL of your website
+      type: "website",
+      images: "/assets/images/logo-ayd.jpg",
+    }
+  };
+}
+
+export default function ShopPage() {
   return (
     <>
       <Header />

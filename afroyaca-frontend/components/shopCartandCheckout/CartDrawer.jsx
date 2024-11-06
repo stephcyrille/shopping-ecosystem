@@ -2,17 +2,19 @@
 import Link from "next/link";
 
 import { useContextElement } from "@/context/Context";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useCurrency } from "@/context/CurrencyContext";
 import { formatNumber } from "@/utlis/nber_parsing";
+import { Loader } from "../common/Loader";
 
 export default function CartDrawer() {
   const { cartProducts, setCartProducts, addBackendProductToCart, totalPrice, handleCleanCart } = useContextElement();
   const { currency } = useCurrency();
   const pathname = usePathname();
   const hasFetched = useRef(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
 
@@ -68,7 +70,10 @@ export default function CartDrawer() {
       .classList.remove("page-overlay_visible");
     document.getElementById("cartDrawer").classList.remove("aside_visible");
   };
+
   const setQuantity = async (elt, quantity, remove=false) => {
+    setLoading(true);
+
     // Send the qty to the backend first
     let postData = {
       line_id: elt.line_id,
@@ -99,8 +104,10 @@ export default function CartDrawer() {
         item.quantity = new_quantity;
         items[itemIndex] = item;
         setCartProducts(items);
+        setLoading(false);
       } catch (error) {
         console.error("Failed to fetch cart list:", error);
+        setLoading(false);
       }
     } else {
       if (quantity >= 1) {
@@ -126,8 +133,10 @@ export default function CartDrawer() {
           item.quantity = new_quantity;
           items[itemIndex] = item;
           setCartProducts(items);
+          setLoading(false);
         } catch (error) {
           console.error("Failed to fetch cart list:", error);
+          setLoading(false);
         }
       }
     }
@@ -138,12 +147,14 @@ export default function CartDrawer() {
       setCartProducts((pre) => [...pre.filter((elm) => elm.id != elt.id)]);
     });
   };
+
   useEffect(() => {
     closeCart();
   }, [pathname]);
 
   return (
     <>
+      <Loader isLoading={loading} />
       <div
         className="aside aside_right overflow-hidden cart-drawer "
         id="cartDrawer"
