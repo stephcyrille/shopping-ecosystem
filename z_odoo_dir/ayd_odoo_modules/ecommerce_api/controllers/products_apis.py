@@ -31,12 +31,12 @@ class EcommerceAPI(http.Controller):
                 val = deserialize_product(product)
                 products.append(val)
 
-        print('\n\n')
-        print(f"IP: {http.request.httprequest.remote_addr}")
-        print(check_auth(http.request.session.uid, http.request.env['res.users']))
-        print(http.request.session.get('sale_order_id'))
-        print(f"{http.request.env['ir.config_parameter'].sudo().get_param('website.dev_api_key', default='')}")
-        print('\n\n')
+        # print('\n\n')
+        # print(f"IP: {http.request.httprequest.remote_addr}")
+        # print(check_auth(http.request.session.uid, http.request.env['res.users']))
+        # print(http.request.session.get('sale_order_id'))
+        # print(f"{http.request.env['ir.config_parameter'].sudo().get_param('website.dev_api_key', default='')}")
+        # print('\n\n')
 
         curr_page = 1
         total_pages = len(products)
@@ -96,9 +96,9 @@ class EcommerceAPI(http.Controller):
         search = ''
         product_value = self._prepare_product_values(category=category, search=search, **kwargs)
 
-        print("\n\n")
-        print(http.request.env.cr.dbname)
-        print("\n\n")
+        # print("\n\n")
+        # print(http.request.env.cr.dbname)
+        # print("\n\n")
 
         res = {"result": product_value}
         return http.Response(

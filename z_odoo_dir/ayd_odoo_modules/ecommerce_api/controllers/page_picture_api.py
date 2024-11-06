@@ -22,7 +22,7 @@ class EcommercePagePictureAPI(http.Controller):
     @http.route(['/apis/home/instagram'], type='http', auth='public', methods=["GET"], website=True)
     def get_picture_instagram(self, **params):
         pictures_home = http.request.env['website.page.picture'].sudo().search([('page', '=', 'home')])
-        base_url = http.request.env['ir.config_parameter'].get_param('web.base.url')
+        base_url = http.request.env['ir.config_parameter'].sudo().get_param('web.base.url')
         pic_list = []
         
         if pictures_home is not None:

@@ -23,7 +23,7 @@ class EcommerceHomeCollectionAPI(http.Controller):
     @http.route(['/apis/home/collections'], type='http', auth='public', methods=["GET"], website=True)
     def get_products_list(self, **params):
         collections_list = http.request.env['website.home.collection'].sudo().search([])
-        base_url = http.request.env['ir.config_parameter'].get_param('web.base.url')
+        base_url = http.request.env['ir.config_parameter'].sudo().get_param('web.base.url')
 
         collections = []
         for collection in collections_list:

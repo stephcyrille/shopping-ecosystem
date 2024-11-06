@@ -24,11 +24,7 @@ class AuthController(http.Controller):
         db = http.request.env.cr.dbname
         username = post.get('username') if post.get('username') else None
         password = post.get('password') if post.get('password') else None
-        print("\n\n")
-        print(http.request.env.cr.dbname)
-        print(http.request.httprequest.headers.get('X-Odoo-Db', None))
-        print(post)
-        print("\n\n")
+
         if db is not None and username is not None and password is not None:
             uid = http.request.session.authenticate(db, username, password)
 
