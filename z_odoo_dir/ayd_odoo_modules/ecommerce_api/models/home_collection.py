@@ -17,6 +17,7 @@ from odoo import api, fields, models, _
 class HomeCollection(models.Model):
     _name = 'website.home.collection'
     _description = 'Ecommerce home collection'
+    _rec_name = 'title'
 
     title = fields.Char(string='Title', required=True) 
     label = fields.Char(string='Label') 
