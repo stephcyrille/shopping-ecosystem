@@ -54,21 +54,17 @@ export default function Hero() {
         <SwiperSlide key={i} className="swiper-slide">
           <div className="overflow-hidden position-relative h-100">
             <div className="slideshow-bg">
-              {
-                (selectedBanner) &&
-                  <Image
-                    loading="lazy"
-                    loader={() => selectedBanner.picture}
-                    unoptimized={true}
-                    src={selectedBanner.picture}
-                    width="1783"
-                    height="800"
-                    alt="image"
-                    className="slideshow-bg__img object-fit-cover object-position-right"
-                  />
-                
-              }
-              
+              {selectedBanner && selectedBanner.picture &&
+                <Image
+                  loading="lazy"
+                  loader={() => selectedBanner.picture}
+                  unoptimized={true}
+                  src={selectedBanner.picture}
+                  width="1783"
+                  height="800"
+                  alt="image"
+                  className="slideshow-bg__img object-fit-cover object-position-right"
+                />}
             </div>
             <div className="slideshow-text container position-absolute start-50 top-50 translate-middle">
               <h6 className="text_dash text-uppercase fs-base fw-medium animate animate_fade animate_btt animate_delay-3">
