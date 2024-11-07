@@ -11,14 +11,21 @@ import ShareComponent from "../common/ShareComponent";
 import { useContextElement } from "@/context/Context";
 import { useCurrency } from "@/context/CurrencyContext";
 import { formatNumber } from "@/utlis/nber_parsing";
+import { Loader } from "../common/Loader";
 
 export default function ShopSingleProduct({ product }) {
   const { cartProducts, setCartProducts } = useContextElement();
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('');
   const { currency } = useCurrency();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
+
+    setTimeout(()=> {
+      setLoading(false);
+    }, 2000);
     if(product.custom_sizes){
       setSelectedSize(product.custom_sizes[0].code);
     }
@@ -32,6 +39,8 @@ export default function ShopSingleProduct({ product }) {
     const item = cartProducts.filter((elm) => elm.id == id)[0];
     if(item){
       if (quantity < 1) return;
+
+      setLoading(true);
       // Send the qty to the backend first
       let postData = {
         line_id: item.line_id,
@@ -61,8 +70,10 @@ export default function ShopSingleProduct({ product }) {
         items[itemIndex] = item;
         setCartProducts(items);
         setQuantity(new_quantity);
+        setLoading(false);
       } catch (error) {
         console.error("Failed to fetch cart list:", error);
+        setLoading(false);
       }
     }else{
       // Update only the amount of product without posting to the server
@@ -73,8 +84,12 @@ export default function ShopSingleProduct({ product }) {
 
 
   const addToCart = async (elt, qty) => {
+    
     if (!isIncludeCard()) {
       if (quantity < 1) return;
+
+      setLoading(true);
+      
       let postData = {
         product_id: elt.id,
         add_qty: qty
@@ -105,13 +120,17 @@ export default function ShopSingleProduct({ product }) {
             quantity: data.quantity,
           }
           setCartProducts((pre) => [...pre, item]);
+          setLoading(false);
         } else if (res_data.data.error.data) {
-          console.error(res_data.data.error.data.message)
+          console.error(res_data.data.error.data.message);
+          setLoading(false);
         } else {
-          console.log('Another problem', res_data.data)
+          console.log('Another problem', res_data.data);
+          setLoading(false);
         }
       } catch (error) {
         console.error("Failed to add item to cart:", error);
+        setLoading(false);
       }
 
     } else {
@@ -127,238 +146,241 @@ export default function ShopSingleProduct({ product }) {
   };
 
   return (
-    <section className="product-single container">
-      <div className="row">
-        <div className="col-lg-7">
-          <ProductSlider images={product.image_list} />
-        </div>
-        <div className="col-lg-5">
-          <div className="d-flex justify-content-between mb-4 pb-md-2">
-            <div className="breadcrumb mb-0 d-none d-md-block flex-grow-1">
-              <BreadCumb />
-            </div>
-            {/* <!-- /.breadcrumb --> */}
-
-            <div className="product-single__prev-next d-flex align-items-center justify-content-between justify-content-md-end flex-grow-1">
-              <a className="text-uppercase fw-medium">
-                <svg
-                  className="mb-1px"
-                  width="10"
-                  height="10"
-                  viewBox="0 0 25 25"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <use href="#icon_prev_md" />
-                </svg>
-                <span className="menu-link menu-link_us-s">Prev</span>
-              </a>
-              <a className="text-uppercase fw-medium">
-                <span className="menu-link menu-link_us-s">Next</span>
-                <svg
-                  className="mb-1px"
-                  width="10"
-                  height="10"
-                  viewBox="0 0 25 25"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <use href="#icon_next_md" />
-                </svg>
-              </a>
-            </div>
-            {/* <!-- /.shop-acs --> */}
+    <>
+      <Loader isLoading={loading} />
+      <section className="product-single container">
+        <div className="row">
+          <div className="col-lg-7">
+            <ProductSlider images={product.image_list} />
           </div>
-          <h1 className="product-single__name">{product.name}</h1>
-          <div className="product-single__rating">
-            <div className="reviews-group d-flex">
-              <Star stars={5} />
-            </div>
-            <span className="reviews-note text-lowercase text-secondary ms-1">
-              {`8k+ commentaires`}
-            </span>
-          </div>
-          <div className="product-single__price">
-            <span className="current-price">{formatNumber(product.price)} {currency}</span>
-          </div>
-          <div className="product-single__short-desc">
-            <p>{product.description}</p>
-          </div>
-          <form onSubmit={(e) => e.preventDefault()}>
-            <div className="product-single__swatches">
-              {product.custom_sizes &&
-                <div className="product-swatch text-swatches">
-                  <label>{'Taille'}</label>
-                  <div className="swatch-list">
-                    <Size sizeList={product.custom_sizes} onSizeChange={handleCheckSize} />
-                  </div>
-                  <a
-                    href="#"
-                    className="sizeguide-link"
-                    data-bs-toggle="modal"
-                    data-bs-target="#sizeGuide"
-                    >
-                    {'Guide des tailles'}
-                  </a>
-                </div>
-              }
-              {/* <div className="product-swatch color-swatches">
-                <label>Color</label>
-                <div className="swatch-list">
-                  <Colors />
-                </div>
-              </div> */}
-            </div>
-            <div className="product-single__addtocart">
-              <div className="qty-control position-relative">
-                <input
-                  type="number"
-                  name="quantity"
-                  value={isIncludeCard() ? isIncludeCard().quantity : quantity}
-                  min="1"
-                  onChange={(e) =>
-                    setItemCartQuantity(product.id, e.target.value)
-                  }
-                  className="qty-control__number text-center"
-                />
-                <div
-                  onClick={() =>
-                    setItemCartQuantity(
-                      product.id,
-                      isIncludeCard()?.quantity - 1 || quantity - 1
-                    )
-                  }
-                  className="qty-control__reduce"
-                >
-                  -
-                </div>
-                <div
-                  onClick={() =>
-                    setItemCartQuantity(
-                      product.id,
-                      isIncludeCard()?.quantity + 1 || quantity + 1
-                    )
-                  }
-                  className="qty-control__increase"
-                >
-                  +
-                </div>
+          <div className="col-lg-5">
+            <div className="d-flex justify-content-between mb-4 pb-md-2">
+              <div className="breadcrumb mb-0 d-none d-md-block flex-grow-1">
+                <BreadCumb />
               </div>
-              {/* <!-- .qty-control --> */}
-              <button
-                type="submit"
-                className="btn btn-primary btn-addtocart js-open-aside"
-                onClick={() => addToCart(product, quantity)}
-              >
-                {isIncludeCard() ? "Deja ajouté" : "Ajouter au panier"}
-              </button>
+              {/* <!-- /.breadcrumb --> */}
+
+              <div className="product-single__prev-next d-flex align-items-center justify-content-between justify-content-md-end flex-grow-1">
+                <a className="text-uppercase fw-medium">
+                  <svg
+                    className="mb-1px"
+                    width="10"
+                    height="10"
+                    viewBox="0 0 25 25"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <use href="#icon_prev_md" />
+                  </svg>
+                  <span className="menu-link menu-link_us-s">Prev</span>
+                </a>
+                <a className="text-uppercase fw-medium">
+                  <span className="menu-link menu-link_us-s">Next</span>
+                  <svg
+                    className="mb-1px"
+                    width="10"
+                    height="10"
+                    viewBox="0 0 25 25"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <use href="#icon_next_md" />
+                  </svg>
+                </a>
+              </div>
+              {/* <!-- /.shop-acs --> */}
             </div>
-          </form>
-          <div className="product-single__addtolinks">
-            <a href="#" className="menu-link menu-link_us-s add-to-wishlist">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+            <h1 className="product-single__name">{product.name}</h1>
+            <div className="product-single__rating">
+              <div className="reviews-group d-flex">
+                <Star stars={5} />
+              </div>
+              <span className="reviews-note text-lowercase text-secondary ms-1">
+                {`8k+ commentaires`}
+              </span>
+            </div>
+            <div className="product-single__price">
+              <span className="current-price">{formatNumber(product.price)} {currency}</span>
+            </div>
+            <div className="product-single__short-desc">
+              <p>{product.description}</p>
+            </div>
+            <form onSubmit={(e) => e.preventDefault()}>
+              <div className="product-single__swatches">
+                {product.custom_sizes &&
+                  <div className="product-swatch text-swatches">
+                    <label>{'Taille'}</label>
+                    <div className="swatch-list">
+                      <Size sizeList={product.custom_sizes} onSizeChange={handleCheckSize} />
+                    </div>
+                    <a
+                      href="#"
+                      className="sizeguide-link"
+                      data-bs-toggle="modal"
+                      data-bs-target="#sizeGuide"
+                      >
+                      {'Guide des tailles'}
+                    </a>
+                  </div>
+                }
+                {/* <div className="product-swatch color-swatches">
+                  <label>Color</label>
+                  <div className="swatch-list">
+                    <Colors />
+                  </div>
+                </div> */}
+              </div>
+              <div className="product-single__addtocart">
+                <div className="qty-control position-relative">
+                  <input
+                    type="number"
+                    name="quantity"
+                    value={isIncludeCard() ? isIncludeCard().quantity : quantity}
+                    min="1"
+                    onChange={(e) =>
+                      setItemCartQuantity(product.id, e.target.value)
+                    }
+                    className="qty-control__number text-center"
+                  />
+                  <div
+                    onClick={() =>
+                      setItemCartQuantity(
+                        product.id,
+                        isIncludeCard()?.quantity - 1 || quantity - 1
+                      )
+                    }
+                    className="qty-control__reduce"
+                  >
+                    -
+                  </div>
+                  <div
+                    onClick={() =>
+                      setItemCartQuantity(
+                        product.id,
+                        isIncludeCard()?.quantity + 1 || quantity + 1
+                      )
+                    }
+                    className="qty-control__increase"
+                  >
+                    +
+                  </div>
+                </div>
+                {/* <!-- .qty-control --> */}
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-addtocart js-open-aside"
+                  onClick={() => addToCart(product, quantity)}
+                >
+                  {isIncludeCard() ? "Deja ajouté" : "Ajouter au panier"}
+                </button>
+              </div>
+            </form>
+            <div className="product-single__addtolinks">
+              <a href="#" className="menu-link menu-link_us-s add-to-wishlist">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <use href="#icon_heart" />
+                </svg>
+                <span>{'Ajouter a la liste d\'envies'}</span>
+              </a>
+              <ShareComponent title={product.title} />
+            </div>
+            <div className="product-single__meta-info">
+              {product.internal_code &&
+                <div className="meta-item">
+                  <label>{'REF ARTICLE: '}</label>
+                  <span>{product.internal_code}</span>
+                </div>}
+              {product.categories &&
+                <div className="meta-item">
+                  <label style={{ marginRight: 5 }}>{'Categories:'}</label>
+                  <span>{product.categories[0].name}</span>
+                </div>}
+              {product.tags_list &&
+                <div className="meta-item">
+                  <label style={{ marginRight: 5 }}>Tags:</label>
+                  <span>biker, black, bomber, leather</span>
+                </div>}
+            </div>
+          </div>
+        </div>
+        <div className="product-single__details-tab">
+          <ul className="nav nav-tabs" id="myTab1" role="tablist">
+            <li className="nav-item" role="presentation">
+              <a
+                className="nav-link nav-link_underscore active"
+                id="tab-description-tab"
+                data-bs-toggle="tab"
+                href="#tab-description"
+                role="tab"
+                aria-controls="tab-description"
+                aria-selected="true"
               >
-                <use href="#icon_heart" />
-              </svg>
-              <span>{'Ajouter a la liste d\'envies'}</span>
-            </a>
-            <ShareComponent title={product.title} />
-          </div>
-          <div className="product-single__meta-info">
-            {product.internal_code &&
-              <div className="meta-item">
-                <label>{'REF ARTICLE: '}</label>
-                <span>{product.internal_code}</span>
-              </div>}
-            {product.categories &&
-              <div className="meta-item">
-                <label style={{ marginRight: 5 }}>{'Categories:'}</label>
-                <span>{product.categories[0].name}</span>
-              </div>}
-            {product.tags_list &&
-              <div className="meta-item">
-                <label style={{ marginRight: 5 }}>Tags:</label>
-                <span>biker, black, bomber, leather</span>
-              </div>}
-          </div>
-        </div>
-      </div>
-      <div className="product-single__details-tab">
-        <ul className="nav nav-tabs" id="myTab1" role="tablist">
-          <li className="nav-item" role="presentation">
-            <a
-              className="nav-link nav-link_underscore active"
-              id="tab-description-tab"
-              data-bs-toggle="tab"
-              href="#tab-description"
-              role="tab"
-              aria-controls="tab-description"
-              aria-selected="true"
-            >
-              {'Description de l\'article'}
-            </a>
-          </li>
-          <li className="nav-item" role="presentation">
-            <a
-              className="nav-link nav-link_underscore"
-              id="tab-additional-info-tab"
-              data-bs-toggle="tab"
-              href="#tab-additional-info"
-              role="tab"
-              aria-controls="tab-additional-info"
-              aria-selected="false"
-            >
-              {'Information additionnelles'}
-            </a>
-          </li>
-          <li className="nav-item" role="presentation">
-            <a
-              className="nav-link nav-link_underscore"
-              id="tab-reviews-tab"
-              data-bs-toggle="tab"
-              href="#tab-reviews"
-              role="tab"
-              aria-controls="tab-reviews"
-              aria-selected="false"
-            >
-              {'Commentaires (2)'}
-            </a>
-          </li>
-        </ul>
-        <div className="tab-content">
-          <div
-            className="tab-pane fade show active"
-            id="tab-description"
-            role="tabpanel"
-            aria-labelledby="tab-description-tab"
-          >
-            {/* Render the rich description HTML from the JSON */}
+                {'Description de l\'article'}
+              </a>
+            </li>
+            <li className="nav-item" role="presentation">
+              <a
+                className="nav-link nav-link_underscore"
+                id="tab-additional-info-tab"
+                data-bs-toggle="tab"
+                href="#tab-additional-info"
+                role="tab"
+                aria-controls="tab-additional-info"
+                aria-selected="false"
+              >
+                {'Information additionnelles'}
+              </a>
+            </li>
+            <li className="nav-item" role="presentation">
+              <a
+                className="nav-link nav-link_underscore"
+                id="tab-reviews-tab"
+                data-bs-toggle="tab"
+                href="#tab-reviews"
+                role="tab"
+                aria-controls="tab-reviews"
+                aria-selected="false"
+              >
+                {'Commentaires (2)'}
+              </a>
+            </li>
+          </ul>
+          <div className="tab-content">
             <div
-              dangerouslySetInnerHTML={{ __html: product.rich_description }}
-            />
-            {/* <Description /> */}
-          </div>
-          <div
-            className="tab-pane fade"
-            id="tab-additional-info"
-            role="tabpanel"
-            aria-labelledby="tab-additional-info-tab"
-          >
-            <AdditionalInfo info={product.additional_information} />
-          </div>
-          <div
-            className="tab-pane fade"
-            id="tab-reviews"
-            role="tabpanel"
-            aria-labelledby="tab-reviews-tab"
-          >
-            <Reviews />
+              className="tab-pane fade show active"
+              id="tab-description"
+              role="tabpanel"
+              aria-labelledby="tab-description-tab"
+            >
+              {/* Render the rich description HTML from the JSON */}
+              <div
+                dangerouslySetInnerHTML={{ __html: product.rich_description }}
+              />
+              {/* <Description /> */}
+            </div>
+            <div
+              className="tab-pane fade"
+              id="tab-additional-info"
+              role="tabpanel"
+              aria-labelledby="tab-additional-info-tab"
+            >
+              <AdditionalInfo info={product.additional_information} />
+            </div>
+            <div
+              className="tab-pane fade"
+              id="tab-reviews"
+              role="tabpanel"
+              aria-labelledby="tab-reviews-tab"
+            >
+              <Reviews />
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

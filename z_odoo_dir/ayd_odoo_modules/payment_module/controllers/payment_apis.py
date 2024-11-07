@@ -41,7 +41,7 @@ def get_image_url(record, field, size=None):
 
 
 class PaymentNotchPayAPI(http.Controller):
-    @http.route(['/apis/payment/init'], type='json', auth="public", methods=['POST'], website=True, csrf=False)
+    @http.route(['/apis/payment/init'], type='json', auth="user", methods=['POST'], website=True, csrf=False)
     def initialize_payment(self, **kwargs):
         is_live = http.request.env['ir.config_parameter'].sudo().get_param('website.is_live', default=None)
         apiKey = http.request.env['ir.config_parameter'].sudo().get_param(
@@ -156,7 +156,7 @@ class PaymentNotchPayAPI(http.Controller):
             }
             return res
         
-    @http.route(['/apis/payment/proceed'], type='json', auth="public", methods=['POST'], website=True, csrf=False)
+    @http.route(['/apis/payment/proceed'], type='json', auth="user", methods=['POST'], website=True, csrf=False)
     def procceed_payment(self, **kwargs):
         is_live = http.request.env['ir.config_parameter'].sudo().get_param('website.is_live', default=None)
         apiKey = http.request.env['ir.config_parameter'].sudo().get_param(
@@ -199,6 +199,9 @@ class PaymentNotchPayAPI(http.Controller):
                 if transaction_data and transaction_data.get('sandbox') == False:
                     payment_transaction = http.request.env['payment.notch.request'].sudo().search([('reference', '=', reference)], limit=1)
                     if payment_transaction:
+                        if payment_transaction.sale_order_id:
+                            payment_transaction.sale_order_id.action_confirm()
+
                         for rec in payment_transaction:
                             rec.write({
                                 'status': transaction_data.get('status', ''),
@@ -208,6 +211,7 @@ class PaymentNotchPayAPI(http.Controller):
                             "code": 202,
                             "action": "confirm",
                             "message": message_confirm,
+                            "reference": payment_transaction.reference,
                             "weather": 1
                         }
                         return res
@@ -288,7 +292,12 @@ class PaymentNotchPayAPI(http.Controller):
                 }
                 return res
         except Exception as e:
-            pass
+            res = {
+                "code": 500,
+                "errorMessage": "Exception triggered on update put payment call",
+                "message": e.__str__()
+            }
+            return res
     
     @http.route(['/apis/payment/conf'], type='http', auth="user", methods=['GET'], website=True, csrf=False)
     def send_hash(self, **kwargs):
@@ -306,7 +315,7 @@ class PaymentNotchPayAPI(http.Controller):
             mimetype='application/json'
         )
     
-    @http.route(['/apis/payment/confirm'], type='json', auth="public", methods=['POST'], website=True, csrf=False)
+    @http.route(['/apis/payment/confirm'], type='json', auth="user", methods=['POST'], website=True, csrf=False)
     def confirm_payment(self, **kwargs):
         json_data = json.loads(http.request.httprequest.data)
 
@@ -358,3 +367,141 @@ class PaymentNotchPayAPI(http.Controller):
             }
             return res
         
+    
+    @http.route(['/apis/payment/check'], type='http', auth="public", methods=['GET'], website=True, csrf=False)
+    def check_payment(self, **kwargs):
+        is_live = http.request.env['ir.config_parameter'].sudo().get_param('website.is_live', default=None)
+        apiKey = http.request.env['ir.config_parameter'].sudo().get_param(
+            'website.prod_api_key' if is_live else 'website.dev_api_key', default=None)
+        reference = kwargs.get('reference', None)
+        
+        if apiKey is not None:
+            url = f"https://api.notchpay.co/payments/{reference}"
+
+            headers = {
+                'Content-Type': 'application/json',
+                'Authorization': apiKey
+            }
+
+            if reference is None:
+                res = {
+                    "code": 401,
+                    "error": f"No transaction found",
+                    "message": f"Check paiement transaction {reference} error",
+                }
+                return http.Response(
+                    json.dumps(res, default=str),
+                    status=200,
+                    mimetype='application/json'
+                )
+
+            try:
+                response = requests.request("GET", url, headers=headers)
+                response_data = response.json()
+                if response.status_code == 200 and response_data.get('status') == 'OK':
+                    transaction_data = response_data.get('transaction', {})
+                    if transaction_data.get('status') and transaction_data.get('status') == 'complete':
+                        payment_transaction = http.request.env['payment.notch.request'].sudo().search([('reference', '=', reference)], limit=1)
+                        if payment_transaction:
+                            order = payment_transaction.sale_order_id
+                            sale_order_dict = {
+                                'id': order.id,
+                                'name': order.name,
+                                'partner_id': order.partner_id.id,
+                                'partner_name': order.partner_id.name,
+                                'date_order': order.date_order,
+                                'state': order.state,
+                                'amount_total': order.amount_total,
+                                'order_line': [{
+                                    'line_id': line.id,
+                                    'product_id': line.product_id.id,
+                                    'product_name': f"{line.product_id.name}", 
+                                    'product_uom_qty': line.product_uom_qty,
+                                    'price_unit': line.price_unit,
+                                    'price_subtotal': line.price_subtotal,
+                                    'image': {
+                                        'id': 0,
+                                        'image_url': f"{line.product_id.product_tmpl_id.get_base_url()}{get_image_url(line.product_id, 'image_1920')}",
+                                        'video_url': ''
+                                    }
+                                } for line in order.order_line]
+                            }
+                            vals = {
+                                'status': transaction_data.get('status'),
+                                'amount': payment_transaction.amount,
+                                'amount_total': payment_transaction.amount_total,
+                                'fee': payment_transaction.fee,
+                                'converted_amount': payment_transaction.converted_amount,
+                                'customer_id': payment_transaction.customer_id.id,
+                                'reference': payment_transaction.reference,
+                                'description': payment_transaction.description,
+                                'currency': payment_transaction.currency,
+                                'geo': payment_transaction.geo,
+                                'delivery_fee': payment_transaction.delivery_fee,
+                                'website_sale_order': sale_order_dict,
+                                'payment_method': payment_transaction.payment_method,
+                            }
+
+                            res = {
+                                "code": response.status_code,
+                                "data": vals,
+                            }
+                            return http.Response(
+                                json.dumps(res, default=str),
+                                status=200,
+                                mimetype='application/json'
+                            )  
+                        else:
+                            res = {
+                                "code": 404,
+                                "errorMessage": f"Payment confirmation server side error",
+                                "message": f"Payment transaction reference {reference} not found"
+                            }
+                            return http.Response(
+                                json.dumps(res, default=str),
+                                status=200,
+                                mimetype='application/json'
+                            )                            
+                    else:
+                        res = {
+                            "code": 200,
+                            "data": {
+                                'status': transaction_data.get('status')
+                            }
+                        }
+                        return http.Response(
+                            json.dumps(res, default=str),
+                            status=200,
+                            mimetype='application/json'
+                        )
+                else:
+                    res = {
+                        "code": response.status_code,
+                        "errorMessage": f"Payment GET confirmation server side error",
+                        "message": response_data.get('message', 'Unknown error')
+                    }
+                    return http.Response(
+                        json.dumps(res, default=str),
+                        status=200,
+                        mimetype='application/json'
+                    )
+
+            except Exception as e:
+                res = {
+                    "code": 500,
+                    "errorMessage": "Exception checking payment call",
+                    "message": e.__str__()
+                }
+                return http.Response(
+                    json.dumps(res, default=str),
+                    status=200,
+                    mimetype='application/json'
+                )
+
+        else:
+            res = {
+                "code": 401,
+                "errorMessage": "Please fill the API Key",
+                "message": "Please fill the API Key",
+            }
+            return res

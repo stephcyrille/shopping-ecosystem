@@ -34,7 +34,7 @@ class WebHookPostApiView(APIView):
                 )
                 hash_digest = computed_hash.hexdigest()
 
-                if not hmac.compare_digest(hash_digest, signature):
+                if hmac.compare_digest(hash_digest, signature):
                     response = json.loads(request.body)
                     event = response.get('event')
 

@@ -45,6 +45,7 @@ export default function Checkout() {
   const [phoneConfirmed, setPhoneConfirmed] = useState(false);
   const [serverMsg, setServerMsg] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [trxRef, setTrxRef] = useState('');
   
   useEffect(()=>{
     setLoading(true);
@@ -139,15 +140,14 @@ export default function Checkout() {
     if (validateFormPhoneConfirm()) {
       setPhoneConfirmed(true);
       setIsLoading(true);
-      setLoading(true);
 
       let user = null;
       let data = {
         amount : deliveryMethod === 'paid' ? totalPrice + 1500 : totalPrice,
-        description : `Afro Yaca Drum Website Paiement ${user ? user.username : 'Public user'} (${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()})`,
+        description : `Afro Yaca Drum Website Paiement ${user ? user.username : `${formData.firstName} ${formData.lastName}`} (${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()})`,
         reference : `REF#${cartProducts[0].cart_id}`,
         customer_email : user ? user.email : formData.email,
-        customer_name : user ? `${user.firstName} ${user.name}` : `${formData.firstName} ${formData.name}`,
+        customer_name : user ? `${user.firstName} ${user.name}` : `${formData.firstName} ${formData.lastName}`,
         customer_mobile : user ? `+237${user.phone}` : `+237${formData.phone}`,
         customer_street : user ? user.address : formData.address,
         customer_city : user ? user.city : formData.city,
@@ -189,18 +189,17 @@ export default function Checkout() {
             router.replace('/order_complete');
           } else if (result.weather === 1){
             setServerMsg(null);
+            setTrxRef(result.reference);
             setUssdConfirm(result.message);
           } else {
             console.warn('No state prepare for this behavious')
           }
         }
         setIsLoading(false);
-        setLoading(false);
         return result; // Return the result or handle it as needed
       } catch (error) {
         console.error("Payment failed:", error);
         setIsLoading(false);
-        setLoading(false);
       }
       
     } else {
@@ -208,9 +207,57 @@ export default function Checkout() {
     }
   };
 
+  const handleConfirmUssdPayment = async () => {
+    setLoading(true);
+    setServerMsg(null)
+    
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
+      const response = await fetch(`${baseUrl}/apis/payment/check?reference=${trxRef}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: 'include'
+      });
+  
+      if (!response.ok) {
+        // Handle HTTP errors
+        const error = await response.json();
+        console.log("List of err", error)
+        throw new Error(error.message || "Something went wrong");
+      }
+  
+      const result = await response.json();
+      
+      if (result.data.status === 'complete'){
+        setServerMsg(null);
+        handleChangeCheckoutData(result.data)
+        setCartProducts([]);
+        handlePaiementMethod(null);
+        handleDeliveryMethod(null);
+        handleCheckoutStep(3);
+        setLoading(false);
+        router.replace('/order_complete');
+      } else {
+        setLoading(false);
+        let msg = {
+          errorMessage: `Le statut du paiement est ${result.data.status}.`,
+          message: "Bien vouloir fermer ce block (sans fermer la fenetre) et procéder de nouveau  \
+                    au paiement.",
+        }
+        setServerMsg(msg);
+      }
+
+    } catch (error) {
+      console.error("Payment check failed:", error);
+      setLoading(false);
+    }
+  };
+
   return (
     <>
-      {/* <Loader isLoading={loading} /> */}
+      <Loader isLoading={loading} />
       {checkoutStep === 2 && <>
         <PaymentModal 
           isOpen={isModalOpen} 
@@ -223,6 +270,7 @@ export default function Checkout() {
           isLoading={isLoading}
           paymentErrors={serverMsg}
           ussdMsg={ussdConfirm}
+          handleCheckPaiement={handleConfirmUssdPayment}
         />
         <form onSubmit={handleSubmit}>
           <div className="checkout-form">

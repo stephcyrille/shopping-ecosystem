@@ -88,3 +88,47 @@ class MakePaymentAPIViews(APIView):
                 "message": "Unauthorized request",
             }
             return Response(values, status=status.HTTP_401_UNAUTHORIZED)
+        
+
+class CheckPaymentApiView(APIView):
+
+    def get(self, request):
+        conn = APIConnector()
+        session_id = conn.connect() 
+
+        cart_session_id = request.COOKIES.get('cart_session_id')
+        if not cart_session_id:
+            values = {
+                "code": status.HTTP_403_FORBIDDEN,
+                "errorMessage": "Payment check transaction not secured",
+                "message": "Payment check transaction not secured between the endpoints",
+            }
+            return Response(values, status=status.HTTP_403_FORBIDDEN)
+        
+        reference = request.GET.get('reference', None)
+        if session_id:
+            url = f'apis/payment/check?reference={reference}'
+            try:
+                res = conn.make_api_call(endpoint=url)
+                if res.get('data'):
+                    values = res.get('data')
+                    values = {
+                        "responseCode": status.HTTP_200_OK,
+                        "data": values,
+                    }
+                    return Response(values, status=status.HTTP_200_OK)
+                else:
+                    values = {
+                        "responseCode": status.HTTP_404_NOT_FOUND,
+                        "errorMessage": res.get('errorMessage'),
+                        "message": res.get('message'),
+                    }
+                    return Response(values, status=status.HTTP_404_NOT_FOUND)
+            except Exception as e:
+                pass
+        else:
+            values = {
+                "responseCode": status.HTTP_401_UNAUTHORIZED,
+                "description": "Unauthorized request",
+            }
+            return Response(values, status=status.HTTP_401_UNAUTHORIZED)

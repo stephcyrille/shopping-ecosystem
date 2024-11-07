@@ -1,11 +1,15 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useContextElement } from "@/context/Context";
+
 
 export default function PaymentModal({ 
   isOpen, setIsModalOpen, handleProceedPayment, phoneNumberIsConfirmed,
   phoneInput, errMsg, handleInputChange, isLoading, paymentErrors,
-  ussdMsg }) {
+  ussdMsg, handleCheckPaiement }) {
+  
+  const { paiementMethod } = useContextElement();
   const modalElement = useRef();
   const modalInstance = useRef(null); // Store the modal instance
 
@@ -103,7 +107,7 @@ export default function PaymentModal({
                           />
                         </circle>
                       </svg>
-                      <p>Paiement en cours...</p>
+                      <p>{"Paiement en cours..."}</p>
                     </div>
                   </> 
                   :
@@ -151,7 +155,23 @@ export default function PaymentModal({
                             {"MODIFIER LES INFORMATIONS"}
                           </button>
                         </div>
-                      </> : <p>{ussdMsg}</p>
+                      </> : 
+                      <>
+                        <p className="text-justify">
+                          {"Vous allez être invité à confirmer le paiement sur votre mobile."}<br />
+                          {`Bien vouloir valider le paiement en saisissant votre code secret ${paiementMethod === 'cm.orange' ? 'Orange Money' : paiementMethod === 'cm.mtn' ? 'MTN Mobile Money' : paiementMethod}`} <br />
+                          {`Sinon ${ussdMsg.toLocaleLowerCase()}`}
+                        </p>
+
+                        <div className="button-wrapper container">
+                          <button 
+                            className="btn btn-primary btn-checkout"
+                            onClick={handleCheckPaiement}
+                          >
+                            {"TERMINER LE PAIEMENT"}
+                          </button>
+                        </div>
+                      </>
                           
                     }
                   </div>
