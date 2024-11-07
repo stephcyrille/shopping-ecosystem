@@ -90,28 +90,17 @@ export default function ShopListBanner() {
                 className="slideshow-bg"
                 style={{ backgroundColor: elm.backgroundColor }}
               >
-                {
-                  (selectedBanner) ?
-                    <Image
-                      loading="lazy"
-                      loader={() => selectedBanner.picture}
-                      unoptimized={true}
-                      src={selectedBanner.picture}
-                      width="1783"
-                      height="800"
-                      alt="image"
-                      className="slideshow-bg__img object-fit-cover object-position-right"
-                    />
-                    :
-                    <Image
-                      loading="lazy"
-                      src={elm.imagePath}
-                      width="630"
-                      height="450"
-                      alt="Women's accessories"
-                      className="slideshow-bg__img object-fit-cover"
-                    />
-                }
+                {selectedBanner && selectedBanner.picture &&
+                  <Image
+                    loading="lazy"
+                    loader={() => selectedBanner.picture}
+                    unoptimized={true}
+                    src={selectedBanner.picture}
+                    width="1783"
+                    height="800"
+                    alt="image"
+                    className="slideshow-bg__img object-fit-cover object-position-right"
+                  />}
               </div>
             </div>
           </div>
