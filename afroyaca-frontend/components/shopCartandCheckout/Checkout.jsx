@@ -210,7 +210,7 @@ export default function Checkout() {
 
   return (
     <>
-      <Loader isLoading={loading} />
+      {/* <Loader isLoading={loading} /> */}
       {checkoutStep === 2 && <>
         <PaymentModal 
           isOpen={isModalOpen} 

@@ -21,11 +21,14 @@ export default function OrderCompleted() {
     setShowDate(true);
     // Add overflow: scroll !important to the root <html> element
     document.documentElement.style.setProperty('overflow', 'scroll', 'important');
-
+    
     if(checkoutStep === 1 || checkoutStep === 2){
       console.log('checkout is number ', checkoutStep, checkoutData)
       router.push('/cart');
     } 
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
 
     if (paiementMethod === "cm.orange"){
       setPaiement("Orange Money");
@@ -44,7 +47,6 @@ export default function OrderCompleted() {
     } else {
       router.push('/');
     }
-    setLoading(false);
   }, []);
 
   return (

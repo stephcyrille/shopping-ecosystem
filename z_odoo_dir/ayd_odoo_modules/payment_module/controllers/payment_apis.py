@@ -295,29 +295,30 @@ class PaymentNotchPayAPI(http.Controller):
         except Exception as e:
             pass
     
-    @http.route(['/apis/payment/proceed/confirm'], type='http', auth="public", methods=['POST'], website=True, csrf=False)
-    def confirm_notch_payment(self, **kwargs):
+    @http.route(['/apis/payment/conf'], type='http', auth="user", methods=['GET'], website=True, csrf=False)
+    def send_hash(self, **kwargs):
         is_live = http.request.env['ir.config_parameter'].sudo().get_param('website.is_live', default=None)
         apiSecret = http.request.env['ir.config_parameter'].sudo().get_param(
             'website.prod_secret_key' if is_live else 'website.dev_secret_key', default=None)
+        
+        res = {
+            "code": 200,
+            "result": apiSecret
+        }
+        return http.Response(
+            json.dumps(res, default=str),
+            status=200,
+            mimetype='application/json'
+        )
+    
+    @http.route(['/apis/payment/confirm'], type='json', auth="public", methods=['POST'], website=True, csrf=False)
+    def confirm_payment(self, **kwargs):
         json_data = json.loads(http.request.httprequest.data)
 
-        signature = http.request.httprequest.headers.get('x-notch-signature')
-        computed_hash = hmac.new(apiSecret.encode(), http.request.httprequest.data, hashlib.sha256).hexdigest()
-
-        print('\n\n\n')
-        print(json_data)
-        print('\n\n\n')
-        print(computed_hash)
-        print('\n\n\n')
-        print(signature)
-        print('\n\n\n')
-
-        # if hmac.compare_digest(computed_hash, signature):
-        event = json_data.get('event') if json_data.get('event') else None
-        data = json_data.get('data') if json_data.get('data') else None
-
+        event = json_data.get('event', '')
+        data = json_data.get('data', '')
         reference = data.get('reference', '')
+
         if reference:
             payment_transaction = http.request.env['payment.notch.request'].sudo().search([('reference', '=', reference)], limit=1)
             if payment_transaction:
@@ -332,67 +333,33 @@ class PaymentNotchPayAPI(http.Controller):
                             'fee': fee,
                             'description': details,
                         })
-
-                    if 'payment.complete' == event:
-                        res = {
-                            "code": 200,
-                            "message": f"Transaction {event} success",
-                            "messageBody": "Transaction completed clearly"
-                        }
-                        return res
-                    else:
-                        res = {
-                            "code": 200,
-                            "message": f"Transaction {event}",
-                            "messageBody": f"Transaction {event}"
-                        }
-                        return http.Response(
-                            json.dumps(res, default=str),
-                            status=200,
-                            mimetype='application/json'
-                        )
+                    
+                    res = {
+                        "code": 200,
+                        "message": f"Transaction {event} success",
+                        "messageBody": "Transaction completed clearly"
+                    }
+                    return res
+                
                 except Exception as e:
                     res = {
                         "code": 500,
                         "message": f"Transaction {event} update error",
                         "messageBody": e.__str__()
                     }
-                    return http.Response(
-                        json.dumps(res, default=str),
-                        status=500,
-                        mimetype='application/json'
-                    )  
+                    return res
             else:
                 res = {
                     "code": 404,
                     "message": f"Transaction {event} error",
                     "messageBody": "Unable to find the transaction payment object"
                 }
-                return http.Response(
-                    json.dumps(res, default=str),
-                    status=404,
-                    mimetype='application/json'
-                )  
+                return res
         else:
             res = {
                 "code": 404,
                 "message": f"Transaction {event} error",
                 "messageBody": f"No reference matching for {reference}"
             }
-            return http.Response(
-                json.dumps(res, default=str),
-                status=404,
-                mimetype='application/json'
-            )
-        # else:
-        #     res = {
-        #         "code": 401,
-        #         "message": "Header bad signature",
-        #         "messageBody": "Your header signature don't match with the server signature"
-        #     }
-        #     return http.Response(
-        #         json.dumps(res, default=str),
-        #         status=401,
-        #         mimetype='application/json'
-        #     )
+            return res
         

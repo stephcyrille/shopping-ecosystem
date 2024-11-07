@@ -22,7 +22,7 @@
       <field name="arch" type="xml">
         <form create="false">
           <header>
-            <field name="status" widget="statusbar" statusbar_visible="pending,processing,complete" />
+            <field name="status" widget="statusbar" statusbar_visible="pending,processing" />
           </header>
           <sheet>
             <div class="oe_title">

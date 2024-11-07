@@ -26,6 +26,7 @@ from myproxy.apis.payments_apis import *
 from myproxy.apis.home import *
 from myproxy.apis.cart_apis import *
 from myproxy.apis.page_pictures_apis import *
+from myproxy.apis.webhook import WebHookPostApiView
 
 urlpatterns = [
     path('apis/', GetUserCartSessionAPIViews.as_view()),
@@ -44,4 +45,5 @@ urlpatterns = [
     path('apis/cart/update/add', AddProductCartSessionViews.as_view()),
     path('apis/cart/update/set', SetProductCartSessionViews.as_view()),
     path('apis/payments/init', MakePaymentAPIViews.as_view()),
+    path('apis/webhook/payment', WebHookPostApiView.as_view()),
 ]
