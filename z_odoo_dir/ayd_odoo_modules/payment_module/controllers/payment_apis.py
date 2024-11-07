@@ -47,9 +47,6 @@ class PaymentNotchPayAPI(http.Controller):
         apiKey = http.request.env['ir.config_parameter'].sudo().get_param(
             'website.prod_api_key' if is_live else 'website.dev_api_key', default=None)
         json_data = json.loads(http.request.httprequest.data)
-        print('\n\n\n')
-        print(apiKey)
-        print('\n\n\n')
 
         amount = json_data.get('amount') if json_data.get('amount') else None
         description = json_data.get('description') if json_data.get('description') else None
@@ -258,7 +255,6 @@ class PaymentNotchPayAPI(http.Controller):
                             'customer_id': payment_transaction.customer_id.id,
                             'reference': payment_transaction.reference,
                             'description': payment_transaction.description,
-                            'status': 'completed',
                             'currency': payment_transaction.currency,
                             'geo': payment_transaction.geo,
                             'delivery_fee': payment_transaction.delivery_fee,
@@ -268,7 +264,6 @@ class PaymentNotchPayAPI(http.Controller):
                         
                         for rec in payment_transaction:
                             rec.write({
-                                'status': 'complete',
                                 'payment_method': payment_method
                             })
 
