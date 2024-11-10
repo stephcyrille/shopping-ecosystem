@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include,re_path
 from myproxy.views import * 
 from myproxy.apis.session_apis import * 
 from myproxy.apis.products_apis import * 
@@ -29,6 +29,8 @@ from myproxy.apis.page_pictures_apis import *
 from myproxy.apis.webhook import WebHookPostApiView
 
 urlpatterns = [
+    re_path(r'^auth/', include('djoser.urls')),
+    re_path(r'^auth/', include('djoser.urls.jwt')),
     path('apis/', GetUserCartSessionAPIViews.as_view()),
     path('admin/', admin.site.urls),
     path('apis/init', GetSessionIdViews.as_view()),

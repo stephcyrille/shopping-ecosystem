@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     "myproxy",
+    "djoser",
 ]
 
 MIDDLEWARE = [
@@ -194,3 +195,20 @@ else:
     # else:
     ODOO_SERVER_HOST = f"http://{config('ODOO_SERVER_HOST')}"
 
+#  JWT Settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+SIMPLE_JWT = {
+   'AUTH_HEADER_TYPES': ('JWT',),
+}
+
+# Djoser settings
+DJOSER = {
+    'ACTIVATION_URL': 'auth/users/activation/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': True,
+    "LOGOUT_ON_PASSWORD_CHANGE": True
+}
