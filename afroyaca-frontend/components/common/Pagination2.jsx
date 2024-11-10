@@ -1,22 +1,20 @@
-"use client";
 import React, { useState } from "react";
 
-export default function Pagination2({ totalPages = 4 }) {
-  const [currentPage, setCurrentPage] = useState(1);
+export default function Pagination2({ totalPages, currentPage, onPageChange }) {
 
   const handlePageClick = (pageNumber) => {
-    setCurrentPage(pageNumber);
+    onPageChange(pageNumber);
   };
 
   const handlePrevClick = () => {
     if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
+      onPageChange(currentPage - 1);
     }
   };
 
   const handleNextClick = () => {
     if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
+      onPageChange(currentPage + 1);
     }
   };
 
@@ -44,7 +42,7 @@ export default function Pagination2({ totalPages = 4 }) {
         >
           <use href="#icon_prev_sm" />
         </svg>
-        <span className="fw-medium">PREV</span>
+        <span className="fw-medium">{"PRÉC"}</span>
       </a>
       <ul className="pagination mb-0">
         {Array.from({ length: totalPages }, (_, index) => (
@@ -74,7 +72,7 @@ export default function Pagination2({ totalPages = 4 }) {
           handleNextClick();
         }}
       >
-        <span className="fw-medium me-1">NEXT</span>
+        <span className="fw-medium me-1">{"SUIV"}</span>
         <svg
           width="7"
           height="11"

@@ -34,6 +34,20 @@ export default function ShopListContainer() {
   const [selectedPriceRange, setSelectedPriceRange] = useState([0, 100000]);  // Plage de prix
   const [filteredProducts, setFilteredProducts] = useState([]);  // Produits filtrés
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 15;
+  // Calculate the total pages based on the filtered products
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage)
+
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * productsPerPage,
+    currentPage * productsPerPage
+  );
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
 
   useEffect(() => {
     async function fetchProductList() {
@@ -266,7 +280,7 @@ export default function ShopListContainer() {
           className={`products-grid row row-cols-2 row-cols-md-3  row-cols-lg-${selectedColView}`}
           id="products-grid"
         >
-          {filteredProducts.map((elm, i) => (
+          {paginatedProducts.map((elm, i) => (
             <div key={elm.id} className="product-card-wrapper">
               <div className="product-card mb-3 mb-md-4 mb-xxl-5">
                 <div className="pc__img-wrapper">
@@ -413,7 +427,11 @@ export default function ShopListContainer() {
         </div>
         {/* <!-- /.products-grid row --> */}
 
-        {/* <Pagination2 /> */}
+        <Pagination2 
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={handlePageChange}
+        />
       </div>
     </section>
     </>
