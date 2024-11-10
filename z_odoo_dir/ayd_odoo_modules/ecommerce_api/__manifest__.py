@@ -33,6 +33,7 @@ Ecommerce REST API module: contains multiple routes
         "views/website_size.xml",
         "views/product_template_size.xml",
         "views/website_page_picture.xml",
+        "views/sale_order_line_website.xml",
     ],
     'assets': {},
     'installable': True,

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <record id="view_api_sale_order_line_website" model="ir.ui.view">
+      <field name="name">sale.order.form</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form" />
+      <field name="arch" type="xml">
+        <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="after">
+          <!-- Add the custom 'size' field right after 'name' -->
+          <field 
+            name="size"
+          />
+        </xpath>
+      </field>
+    </record>
+  </data>
+</odoo>
