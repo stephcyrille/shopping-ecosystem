@@ -29,6 +29,7 @@ export default function Cart() {
       line_id: elt.line_id,
       product_id: elt.id,
       set_qty: quantity,
+      size: elt.size,
     }
 
     if (remove){

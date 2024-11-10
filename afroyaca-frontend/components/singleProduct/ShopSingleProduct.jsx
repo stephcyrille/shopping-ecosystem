@@ -16,20 +16,29 @@ import { Loader } from "../common/Loader";
 export default function ShopSingleProduct({ product }) {
   const { cartProducts, setCartProducts } = useContextElement();
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState('');
+  const [selectedSize, setSelectedSize] = useState("");
   const { currency } = useCurrency();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
 
-    setTimeout(()=> {
-      setLoading(false);
-    }, 2000);
-    if(product.custom_sizes){
-      setSelectedSize(product.custom_sizes[0].code);
-    }
-  }, [product]);
+    setTimeout(() => {
+      let item = cartProducts.filter((elm) => elm.id == product.id)[0];
+  
+      if (item){
+        setSelectedSize(item.size);
+        setLoading(false);
+      } else {
+        if(product.custom_sizes){
+          setSelectedSize(product.custom_sizes[0].code);
+        }
+        setLoading(false);
+      }
+    }, 2000)
+
+
+  }, [cartProducts, product]);
 
   const isIncludeCard = () => {
     const item = cartProducts.filter((elm) => elm.id == product.id)[0];
@@ -46,6 +55,7 @@ export default function ShopSingleProduct({ product }) {
         line_id: item.line_id,
         product_id: item.id,
         set_qty: quantity,
+        size: selectedSize,
       };
 
       try {
@@ -92,7 +102,8 @@ export default function ShopSingleProduct({ product }) {
       
       let postData = {
         product_id: elt.id,
-        add_qty: qty
+        add_qty: qty,
+        size: selectedSize
       }
       
       try {
@@ -117,6 +128,7 @@ export default function ShopSingleProduct({ product }) {
             imgSrc: elt.image_list[0].image_url,
             price: elt.price,
             title: elt.name,
+            size: selectedSize,
             quantity: data.quantity,
           }
           setCartProducts((pre) => [...pre, item]);
@@ -141,7 +153,45 @@ export default function ShopSingleProduct({ product }) {
     }
   };
 
-  const handleCheckSize = (value) => {
+  const handleCheckSize = async (value) => {
+    if (isIncludeCard()){
+      const item = isIncludeCard();
+      setLoading(true);
+      // Send the qty to the backend first
+      let postData = {
+        line_id: item.line_id,
+        product_id: item.id,
+        set_qty: item.quantity,
+        size: value,
+      };
+
+      try {
+        postData.update_methode = "set"
+        let res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/apis/cart/update/set`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(postData), 
+          credentials: 'include' 
+        });
+        
+        let res_data = await res.json();
+        let data = res_data.data;
+        let new_size = value;
+        
+        const items = [...cartProducts];
+        const itemIndex = items.indexOf(item);
+        // set the new size here
+        item.size = new_size;
+        items[itemIndex] = item;
+        setCartProducts(items);
+        setLoading(false);
+      } catch (error) {
+        console.error("Failed to fetch cart list:", error);
+        setLoading(false);
+      }
+    }
     setSelectedSize(value);
   };
 
@@ -171,10 +221,10 @@ export default function ShopSingleProduct({ product }) {
                   >
                     <use href="#icon_prev_md" />
                   </svg>
-                  <span className="menu-link menu-link_us-s">Prev</span>
+                  <span className="menu-link menu-link_us-s">{"Préc"}</span>
                 </a>
                 <a className="text-uppercase fw-medium">
-                  <span className="menu-link menu-link_us-s">Next</span>
+                  <span className="menu-link menu-link_us-s">{"Suiv"}</span>
                   <svg
                     className="mb-1px"
                     width="10"
@@ -209,7 +259,7 @@ export default function ShopSingleProduct({ product }) {
                   <div className="product-swatch text-swatches">
                     <label>{'Taille'}</label>
                     <div className="swatch-list">
-                      <Size sizeList={product.custom_sizes} onSizeChange={handleCheckSize} />
+                      <Size selected={selectedSize} sizeList={product.custom_sizes} onSizeChange={handleCheckSize} />
                     </div>
                     <a
                       href="#"
@@ -376,7 +426,7 @@ export default function ShopSingleProduct({ product }) {
               role="tabpanel"
               aria-labelledby="tab-reviews-tab"
             >
-              <Reviews />
+              {/* <Reviews /> */}
             </div>
           </div>
         </div>

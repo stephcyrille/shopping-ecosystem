@@ -45,6 +45,7 @@ export default function CartDrawer() {
               id: elt.product_id,
               cart_id: so.id,
               line_id: elt.line_id,
+              size: elt.size,
               imgAlt: elt.product_name,
               imgSrc: elt.image.image_url,
               price: elt.price_unit,
@@ -71,7 +72,7 @@ export default function CartDrawer() {
     document.getElementById("cartDrawer").classList.remove("aside_visible");
   };
 
-  const setQuantity = async (elt, quantity, remove=false) => {
+  const setQuantity = async (elt, quantity, remove=false, size='') => {
     setLoading(true);
 
     // Send the qty to the backend first
@@ -79,6 +80,7 @@ export default function CartDrawer() {
       line_id: elt.line_id,
       product_id: elt.id,
       set_qty: quantity,
+      size: size,
     }
 
     if (remove){
@@ -94,6 +96,7 @@ export default function CartDrawer() {
         });
         
         let res_data = await res.json();
+        console.log(res_data)
         let data = res_data.data;
         let new_quantity = data.quantity;
 
@@ -143,7 +146,7 @@ export default function CartDrawer() {
   };
 
   const removeItem = async (elt) => {
-    await setQuantity(elt, 0, true).then(() => {
+    await setQuantity(elt, 0, true, elt.size).then(() => {
       setCartProducts((pre) => [...pre.filter((elm) => elm.id != elt.id)]);
     });
   };
@@ -200,7 +203,7 @@ export default function CartDrawer() {
                       Color: Yellow
                     </p> */}
                     <p className="cart-drawer-item__option text-secondary">
-                      Size: {elm.size}
+                      {"Taille: "} {elm.size}
                     </p>
                     <div className="d-flex align-items-center justify-content-between mt-1">
                       <div className="qty-control position-relative">
@@ -208,7 +211,7 @@ export default function CartDrawer() {
                           type="number"
                           name="quantity"
                           onChange={(e) =>
-                            setQuantity(elm, e.target.value / 1)
+                            setQuantity(elm, e.target.value / 1, false, elm.size)
                           }
                           value={elm.quantity}
                           min="1"
@@ -216,14 +219,14 @@ export default function CartDrawer() {
                         />
                         <div
                           onClick={() => {
-                            setQuantity(elm, elm.quantity - 1);
+                            setQuantity(elm, elm.quantity - 1, false, elm.size);
                           }}
                           className="qty-control__reduce text-start"
                         >
                           -
                         </div>
                         <div
-                          onClick={() => setQuantity(elm, elm.quantity + 1)}
+                          onClick={() => setQuantity(elm, elm.quantity + 1, false, elm.size)}
                           className="qty-control__increase text-end"
                         >
                           +

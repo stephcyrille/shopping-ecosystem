@@ -62,6 +62,7 @@ export default function ShopListContainer() {
                 category: data[i].categories && data[i].categories[0].name,
                 price: data[i].price,
                 imgSrcList: data[i].image_list.map(elt => elt.image_url),
+                sizeList: data[i].custom_sizes.map(elt => elt.code),
               };
               if( data[i].rating) {item.rating = data[i].rating}
               if( data[i].reviews) {item.reviews = data[i].reviews}
@@ -124,7 +125,8 @@ export default function ShopListContainer() {
     }
     let postData = {
       product_id: elt.id,
-      add_qty: 1
+      add_qty: 1,
+      size: elt.sizeList[0],
     }
 
     try {
@@ -149,6 +151,7 @@ export default function ShopListContainer() {
           imgSrc: elt.imgSrcList[0],
           price: elt.price,
           title: elt.title,
+          size: elt.sizeList[0],
           quantity: 1,
         }
         setCartProducts((pre) => [...pre, item]);

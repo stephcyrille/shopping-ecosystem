@@ -62,6 +62,7 @@ class EcommerceAPI(http.Controller):
                     'product_name': f"{line.product_id.name}", 
                     'product_uom_qty': line.product_uom_qty,
                     'price_unit': line.price_unit,
+                    'size': line.size,
                     'price_subtotal': line.price_subtotal,
                     'image': {
                         'id': 0,
@@ -95,6 +96,7 @@ class EcommerceAPI(http.Controller):
         product_id = kwargs.get('product_id')
         set_qty = kwargs.get('set_qty') if kwargs.get('set_qty') else None
         add_qty = kwargs.get('add_qty') if kwargs.get('add_qty') else None
+        size = kwargs.get('size') if kwargs.get('size') else None
         line_id = kwargs.get('line_id') if kwargs.get('line_id') else None
         update_methode = kwargs.get('update_methode') if kwargs.get('update_methode') else None
         
@@ -117,6 +119,7 @@ class EcommerceAPI(http.Controller):
                 line_id=line_id,
                 add_qty=add_qty,
                 set_qty=set_qty,
+                size=size,
                 product_custom_attribute_values=product_custom_attribute_values,
                 no_variant_attribute_values=no_variant_attribute_values,
             )
@@ -125,6 +128,7 @@ class EcommerceAPI(http.Controller):
                 product_id=int(product_id),
                 line_id=line_id,
                 set_qty=set_qty,
+                size=size,
             )
 
         if not order.cart_quantity:

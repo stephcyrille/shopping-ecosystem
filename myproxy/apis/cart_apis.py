@@ -60,6 +60,7 @@ class AddProductCartSessionViews(APIView):
                         "params": {
                             "product_id": serializer.validated_data['product_id'],
                             "add_qty": serializer.validated_data['add_qty'],
+                            "size": serializer.validated_data['size'],
                             "force_create": True,
                             "cart_ref": cart_session_id
                         }
@@ -116,6 +117,7 @@ class SetProductCartSessionViews(APIView):
                             "product_id": serializer.validated_data['product_id'],
                             "line_id": serializer.validated_data['line_id'],
                             "set_qty": serializer.validated_data['set_qty'],
+                            "size": serializer.validated_data['size'],
                             "cart_ref": cart_session_id,
                         }
                     }
@@ -136,6 +138,7 @@ class SetProductCartSessionViews(APIView):
                                 "set_qty": serializer.validated_data['set_qty'],
                                 "cart_ref": cart_session_id,
                                 "update_methode": serializer.validated_data['update_methode'],
+                                "size": serializer.validated_data['size'],
                             }
                         }
 

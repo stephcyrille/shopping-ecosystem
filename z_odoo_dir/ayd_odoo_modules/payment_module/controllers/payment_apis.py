@@ -244,6 +244,7 @@ class PaymentNotchPayAPI(http.Controller):
                                 'product_uom_qty': line.product_uom_qty,
                                 'price_unit': line.price_unit,
                                 'price_subtotal': line.price_subtotal,
+                                'size': line.size,
                                 'image': {
                                     'id': 0,
                                     'image_url': f"{line.product_id.product_tmpl_id.get_base_url()}{get_image_url(line.product_id, 'image_1920')}",
@@ -419,6 +420,7 @@ class PaymentNotchPayAPI(http.Controller):
                                     'product_uom_qty': line.product_uom_qty,
                                     'price_unit': line.price_unit,
                                     'price_subtotal': line.price_subtotal,
+                                    'size': line.size,
                                     'image': {
                                         'id': 0,
                                         'image_url': f"{line.product_id.product_tmpl_id.get_base_url()}{get_image_url(line.product_id, 'image_1920')}",
