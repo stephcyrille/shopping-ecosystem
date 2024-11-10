@@ -297,13 +297,13 @@ export default function Cart() {
                           {"Retrait en magasin"}
                         </label>
                       </div>
-
-                        <div>{"Livraison à 1234 Rue 2.093 Ekié, Yaoundé"}.</div>
-                        <div>
+                        {/* TODO ADD CUSTOMER ADDRESS AND ACTIVATE CHANGE ADDRESS */}
+                        {/* <div>{"Livraison à 1234 Rue 2.093 Ekié, Yaoundé"}.</div> */}
+                        {/* <div>
                           <a href="#" className="menu-link menu-link_us-s text-gray-400">
                             {"Changer d'adresse"}
                           </a>
-                        </div>
+                        </div> */}
                       </td>
                     </tr>
                     <tr>
