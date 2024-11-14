@@ -26,7 +26,7 @@ from myproxy.apis.payments_apis import *
 from myproxy.apis.home import *
 from myproxy.apis.cart_apis import *
 from myproxy.apis.page_pictures_apis import *
-from myproxy.apis.webhook import WebHookPostApiView
+from myproxy.apis.webhook import *
 
 urlpatterns = [
     re_path(r'^auth/', include('djoser.urls')),

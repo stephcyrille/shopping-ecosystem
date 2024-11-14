@@ -16,6 +16,7 @@ export default function Context({ children }) {
   const [paiementMethod, setPaiementMethod] = useState("cm.orange");
   const [checkoutStep, setCheckoutStep] = useState(0);
   const [checkoutData, setCheckoutData] = useState(null);
+  const [userToken, setUserToken] = useState(null);
 
   useEffect(() => {
     const subtotal = cartProducts.reduce((accumulator, product) => {
@@ -142,7 +143,18 @@ export default function Context({ children }) {
     localStorage.setItem("checkoutData", JSON.stringify(checkoutData));
   }, [checkoutData]);
   const handleChangeCheckoutData = (data) => {
-    setCheckoutData(data)
+    setCheckoutData(data);
+  }
+
+  useEffect(() => {
+    const authToken = JSON.parse(localStorage.getItem("authToken"));
+    if (authToken !== "") {
+      setUserToken(authToken);
+    }
+  }, []);
+  
+  const handleSetUserToken = (value) => {
+    localStorage.setItem("authToken", JSON.stringify(value));
   }
 
   const contextElement = {
@@ -165,7 +177,9 @@ export default function Context({ children }) {
     checkoutStep,
     handleCheckoutStep,
     checkoutData,
-    handleChangeCheckoutData
+    handleChangeCheckoutData,
+    userToken,
+    handleSetUserToken
   };
   return (
     <dataContext.Provider value={contextElement}>
