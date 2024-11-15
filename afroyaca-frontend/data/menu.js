@@ -182,31 +182,31 @@ export const dashboardMenuItems = [
   {
     id: 1,
     href: "/account_dashboard",
-    title: "Dashboard",
+    title: "Tableau de bord",
   },
   {
     id: 2,
     href: "/account_orders",
-    title: "Orders",
+    title: "Commandes",
   },
   {
     id: 3,
     href: "/account_edit_address",
-    title: "Addresses",
+    title: "Adresses",
   },
   {
     id: 4,
     href: "/account_edit",
-    title: "Account Details",
+    title: "Détails du compte",
   },
   {
     id: 5,
     href: "/account_wishlist",
-    title: "Wishlist",
+    title: "Liste d'envie",
   },
   {
     id: 6,
     href: "#",
-    title: "Logout",
+    title: "Se déconnecter",
   },
 ];

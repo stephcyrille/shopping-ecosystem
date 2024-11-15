@@ -147,3 +147,30 @@ class EcommerceAPI(http.Controller):
             return values
 
         return values
+    
+    @http.route(['/apis/cart/all'], type='http', auth='public', methods=["GET"], website=True)
+    def get_customer_orders(self, **kwargs):
+        if kwargs.get('user'):
+            orders = http.request.env['sale.order'].sudo().search([('state', '=', 'sale'),  # Filter confirmed orders
+                                                        ('website_id', '!=', False),
+                                                        ('partner_id.email', '=', kwargs.get('user'))])
+            values = {
+                'result': [
+                    {
+                        'id': o.id,
+                        'date_order': o.date_order.strftime('%d/%m/%Y'),
+                        'state': o.state,
+                        'items': len(o.order_line),
+                        'total': o.amount_total,
+                    } for o in orders]
+            }
+        else:
+            orders = None
+            values = {}
+        res = values
+
+        return http.Response(
+            json.dumps(res, default=str),
+            status=200,
+            mimetype='application/json'
+        )

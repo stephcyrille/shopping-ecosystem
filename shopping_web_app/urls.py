@@ -49,4 +49,5 @@ urlpatterns = [
     path('apis/payments/init', MakePaymentAPIViews.as_view()),
     path('apis/webhook/payment', WebHookPostApiView.as_view()),
     path('apis/payment/check', CheckPaymentApiView.as_view()),
+    path('apis/get/orders', GetCustomerOrdersViews.as_view()),
 ]
