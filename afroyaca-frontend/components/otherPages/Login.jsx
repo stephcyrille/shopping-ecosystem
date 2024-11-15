@@ -94,7 +94,7 @@ export default function Login() {
             }
             handleSetUserToken(tokens);
             setLoading(false);
-            router.push('/account_dashboard');
+            window.document.location = '/account_dashboard';
           }
         }
       } catch (error) {

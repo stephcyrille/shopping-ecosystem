@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from decouple import config
 import os
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -69,7 +70,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     "myproxy",
-    "djoser",
+    'rest_framework.authtoken',
+    'djoser',
 ]
 
 MIDDLEWARE = [
@@ -203,7 +205,9 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-   'AUTH_HEADER_TYPES': ('JWT',),
+   "AUTH_HEADER_TYPES": ('JWT',),
+   "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
+   "REFRESH_TOKEN_LIFETIME": timedelta(days=14),
 }
 
 # Djoser settings

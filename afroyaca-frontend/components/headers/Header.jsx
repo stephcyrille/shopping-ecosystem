@@ -9,8 +9,10 @@ import CartLength from "./components/CartLength";
 import Image from "next/image";
 import User from "./components/User";
 import SearchPopup from "./components/SearchPopup";
+import { useContextElement } from "@/context/Context";
 
 export default function Header() {
+  const { userToken } = useContextElement();
   const [scrollDirection, setScrollDirection] = useState("down");
   const pathname = usePathname();
 
@@ -78,9 +80,23 @@ export default function Header() {
           {/* <!-- /.header-tools__item hover-container --> */}
 
           <div className="header-tools__item hover-container">
-            <a className="header-tools__item js-open-aside" href="#">
-              <User />
-            </a>
+              {!userToken ? 
+                <a className="header-tools__item js-open-aside" href="#">
+                    <User />
+                </a>
+                : <Link href={'/account_dashboard'} title={"Tableau de bord"}>
+                    <svg
+                      className="d-block"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="#000000"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <use href="#icon_user" style={{ color: pathname.includes('/account_') ? "#c3292a" : "" }}/>
+                    </svg>
+                  </Link>
+              }
           </div>
 
           <Link className="header-tools__item" href="/account_wishlist">

@@ -4,10 +4,21 @@ import Dashboard from "@/components/otherPages/Dashboard";
 import DashboardSidebar from "@/components/otherPages/DashboardSidebar";
 import React from "react";
 
-export const metadata = {
-  title: "Dashboard-account || Uomo eCommerce React Nextjs Template",
-  description: "Uomo eCommerce React Nextjs Template",
-};
+
+export async function generateMetadata({ params }) {
+  return {
+    title: "Dashboard | Afro Yaca Drum",
+    description: "Achétez tous les produits Afro Chic made by Afro Yaca dans notre boutique en ligne",
+    openGraph: {
+      title: "Dashboard | Afro Yaca Drum",
+      description: "Achétez tous les produits Afro Chic made by Afro Yaca dans notre boutique en ligne",
+      url: "https://afroyacadrum.com",  // Replace with the actual URL of your website
+      type: "website",
+      images: "/assets/images/logo-ayd.jpg",
+    },
+  };
+}
+
 export default function AccountPage() {
   return (
     <>
@@ -15,7 +26,7 @@ export default function AccountPage() {
       <main className="page-wrapper">
         <div className="mb-4 pb-4"></div>
         <section className="my-account container">
-          <h2 className="page-title">My Account</h2>
+          <h2 className="page-title">{"Tableau de bord"}</h2>
           <div className="row">
             <DashboardSidebar />
             <Dashboard />
