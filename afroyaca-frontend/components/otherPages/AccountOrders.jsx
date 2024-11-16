@@ -75,7 +75,7 @@ export default function AccountOrders() {
     <>
       <Loader isLoading={loading} />
       <div className="col-lg-9">
-      {userData ? <>
+      {userData && userData.length ? <>
         <div className="page-content my-account__orders-list">
           <table className="orders-table">
             <thead>

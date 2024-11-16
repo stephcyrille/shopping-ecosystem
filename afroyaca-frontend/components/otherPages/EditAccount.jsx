@@ -52,10 +52,10 @@ export default function EditAccount() {
             let data = res_data.data;
             setFormData({
               ...formData,
-              firstName: data.firstname,
-              lastName: data.lastname,
-              displayName: data.name,
-              email: data.email,
+              firstName: data.firstname || '',
+              lastName: data.lastname || '',
+              displayName: data.name || '',
+              email: data.email || '',
               id: data.id,
             });
             setUserData(data);
@@ -117,7 +117,6 @@ export default function EditAccount() {
     setLoading(true);
     e.preventDefault();
     if (validateProfileForm()) {
-      console.log('========= SUBMIT =========', formData);
       let postData = {
         firstname: formData.firstName,
         lastname: formData.lastName,

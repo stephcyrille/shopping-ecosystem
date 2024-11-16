@@ -99,7 +99,7 @@ export default function Header() {
               }
           </div>
 
-          <Link className="header-tools__item" href="/account_wishlist">
+          {/* <Link className="header-tools__item" href="/account_wishlist">
             <svg
               width="20"
               height="20"
@@ -109,7 +109,7 @@ export default function Header() {
             >
               <use href="#icon_heart" />
             </svg>
-          </Link>
+          </Link> */}
 
           {(pathname !== '/cart' && pathname !== '/checkout' && pathname !== '/order_complete') &&
             <a

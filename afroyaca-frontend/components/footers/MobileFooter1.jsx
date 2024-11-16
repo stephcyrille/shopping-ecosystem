@@ -3,8 +3,8 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 export default function MobileFooter1() {
+  const { userToken } = useContextElement();
   const [showFooter, setShowFooter] = useState(false);
-  const { wishList } = useContextElement();
   useEffect(() => {
     setShowFooter(true);
   }, []);
@@ -16,7 +16,7 @@ export default function MobileFooter1() {
       }`}
     >
       <div className="row text-center">
-        <div className="col-4">
+        <div className={userToken ? "col-4" : "col-6"}>
           <Link
             href="/"
             className="footer-mobile__link d-flex flex-column align-items-center"
@@ -36,7 +36,7 @@ export default function MobileFooter1() {
         </div>
         {/* <!-- /.col-3 --> */}
 
-        <div className="col-4">
+        <div className={userToken ? "col-4" : "col-6"}>
           <Link
             href="/shop"
             className="footer-mobile__link d-flex flex-column align-items-center"
@@ -56,9 +56,9 @@ export default function MobileFooter1() {
         </div>
         {/* <!-- /.col-3 --> */}
 
-        <div className="col-4">
+        {userToken && <div className="col-4">
           <Link
-            href="/account_wishlist"
+            href="/account_dashboard"
             className="footer-mobile__link d-flex flex-column align-items-center"
           >
             <div className="position-relative">
@@ -70,15 +70,12 @@ export default function MobileFooter1() {
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                <use href="#icon_heart" />
+                <use href="#icon_user" />
               </svg>
-              <span className="wishlist-amount d-block position-absolute js-wishlist-count">
-                {wishList.length}
-              </span>
             </div>
-            <span>{"Liste de souhait"}</span>
+            <span>{"Mon compte"}</span>
           </Link>
-        </div>
+        </div>}
         {/* <!-- /.col-3 --> */}
       </div>
       {/* <!-- /.row --> */}

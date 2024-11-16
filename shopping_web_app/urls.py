@@ -54,4 +54,5 @@ urlpatterns = [
     path('apis/get/addresses', GetCustomerAddressViews.as_view()),
     path('apis/get/profile', GetCustomerProfileViews.as_view()),
     path('apis/profile/update', UpdateProfileViews.as_view()),
+    path('apis/address/update', UpdateAddressViews.as_view()),
 ]

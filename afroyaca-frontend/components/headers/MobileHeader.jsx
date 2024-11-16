@@ -8,8 +8,11 @@ import CartLength from "./components/CartLength";
 import { openCart } from "@/utlis/openCart";
 import MobileNav from "./components/MobileNav";
 import Image from "next/image";
+import Link from "next/link";
+import { useContextElement } from "@/context/Context";
 
 export default function MobileHeader() {
+  const { userToken } = useContextElement();
   const [scrollDirection, setScrollDirection] = useState("down");
   
   useEffect(() => {
@@ -152,23 +155,40 @@ export default function MobileHeader() {
 
         <div className="border-top mt-auto pb-2">
           <div className="customer-links container mt-4 mb-2 pb-1">
-            <svg
-              className="d-inline-block align-middle"
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <use href="#icon_user" />
-            </svg>
-            <span className="d-inline-block ms-2 text-uppercase align-middle fw-medium">
-              My Account
-            </span>
+            {userToken ? <Link href={"/account_dashboard"}>
+              <svg
+                className="d-inline-block align-middle"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <use href="#icon_user" />
+              </svg>
+              <span className="d-inline-block ms-2 text-uppercase align-middle fw-medium">
+                {"Mon compte"}
+              </span>
+            </Link> : 
+            <Link href={"/login"}>
+              <svg
+                className="d-inline-block align-middle"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <use href="#icon_user" />
+              </svg>
+              <span className="d-inline-block ms-2 text-uppercase align-middle fw-medium">
+                {"Se connecter"}
+              </span>
+            </Link> }
           </div>
 
           <div className="container d-flex align-items-center">
-            <label className="me-2 text-secondary">Language</label>
+            <label className="me-2 text-secondary">{"Langue"}</label>
             <select
               className="form-select form-select-sm bg-transparent border-0"
               aria-label="Default select example"
@@ -187,7 +207,7 @@ export default function MobileHeader() {
           </div>
 
           <div className="container d-flex align-items-center">
-            <label className="me-2 text-secondary">Currency</label>
+            <label className="me-2 text-secondary">{"Dévise"}</label>
             <select
               className="form-select form-select-sm bg-transparent border-0"
               aria-label="Default select example"
