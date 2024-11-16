@@ -7,7 +7,6 @@ import Nav from "./components/Nav";
 import { openCart } from "@/utlis/openCart";
 import CartLength from "./components/CartLength";
 import Image from "next/image";
-import User from "./components/User";
 import SearchPopup from "./components/SearchPopup";
 import { useContextElement } from "@/context/Context";
 
@@ -81,9 +80,18 @@ export default function Header() {
 
           <div className="header-tools__item hover-container">
               {!userToken ? 
-                <a className="header-tools__item js-open-aside" href="#">
-                    <User />
-                </a>
+                <Link href={'/login'} title={"Tableau de bord"}>
+                  <svg
+                    className="d-block"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="#000000"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <use href="#icon_user" />
+                  </svg>
+                </Link>
                 : <Link href={'/account_dashboard'} title={"Tableau de bord"}>
                     <svg
                       className="d-block"
