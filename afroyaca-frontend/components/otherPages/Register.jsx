@@ -8,6 +8,9 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    birthDate: "",
     email: "",
     password: "",
     passwordConfirm: ""
@@ -42,6 +45,9 @@ export default function Register() {
 
   const validateForm = () => {
     let newErrors = {};
+    if (!formData.firstName) newErrors.firstName = "Le nom est requis.";
+    if (!formData.lastName) newErrors.lastName = "Le prénom est requis.";
+    if (!formData.birthDate) newErrors.birthDate = "L'année de naissance est requise.";
     if (!formData.password) newErrors.password = "Le mot de passe est requis.";
     if (!formData.passwordConfirm) newErrors.passwordConfirm = "La confirmation du mot de passe est requise.";
     if(formData.password !== formData.passwordConfirm) newErrors.passwordConfirm = "Le mot de passe et la confirmation du mot de passe doivent être identique."
@@ -69,6 +75,43 @@ export default function Register() {
               onSubmit={handleSubmit}
               className="needs-validation"
             >
+              <div className="form-floating mb-3">
+                <input
+                  className="form-control form-control_gray"
+                  id="lastName"
+                  placeholder="Prénom *"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  required
+                />
+                <label htmlFor="lastName">{"Prénom *"}</label>
+                {errors.lastName && <small className="text-danger">{errors.lastName}</small>}
+              </div>
+              <div className="form-floating mb-3">
+                <input
+                  className="form-control form-control_gray"
+                  id="firstName"
+                  placeholder="Nom *"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                  required
+                />
+                <label htmlFor="firstName">{"Nom *"}</label>
+                {errors.firstName && <small className="text-danger">{errors.firstName}</small>}
+              </div>
+              <div className="form-floating mb-3">
+                <input
+                  className="form-control form-control_gray"
+                  type="date"
+                  id="birthDate"
+                  placeholder="Date de naissance *"
+                  value={formData.birthDate}
+                  onChange={handleInputChange}
+                  required
+                />
+                <label htmlFor="birthDate">{"Date de naissance *"}</label>
+                {errors.birthDate && <small className="text-danger">{errors.birthDate}</small>}
+              </div>
               <div className="form-floating mb-3">
                 <input
                   className="form-control form-control_gray"

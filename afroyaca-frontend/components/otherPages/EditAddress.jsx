@@ -39,7 +39,6 @@ export default function EditAddress() {
             let res_data = await res.json();
             let data = res_data.data;
             
-            console.log('=====>>>> Adress <<<=====', data)
             setUserData(data);
           }
           setLoading(false);

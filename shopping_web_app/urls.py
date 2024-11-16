@@ -52,4 +52,5 @@ urlpatterns = [
     path('apis/payment/check', CheckPaymentApiView.as_view()),
     path('apis/get/orders', GetCustomerOrdersViews.as_view()),
     path('apis/get/addresses', GetCustomerAddressViews.as_view()),
+    path('apis/get/profile', GetCustomerProfileViews.as_view()),
 ]

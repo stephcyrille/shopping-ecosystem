@@ -16,7 +16,7 @@ import logging
 from odoo import http
 
 
-class EcommerceAdressAPI(http.Controller):    
+class EcommerceProfilessAPI(http.Controller):    
     @http.route(['/apis/address/all'], type='http', auth='public', methods=["GET"], website=True)
     def get_customer_address(self, **kwargs):
         if kwargs.get('user'):
@@ -60,6 +60,31 @@ class EcommerceAdressAPI(http.Controller):
                         }
                     ]
                 }
+        else:
+            values = {}
+        res = values
+
+        return http.Response(
+            json.dumps(res, default=str),
+            status=200,
+            mimetype='application/json'
+        )
+    
+    @http.route(['/apis/profile/get'], type='http', auth='public', methods=["GET"], website=True)
+    def get_customer_profile(self, **kwargs):
+        if kwargs.get('user'):
+            address = http.request.env['res.partner'].sudo().search([('email', '=', kwargs.get('user'))], limit=1)
+            if address:
+                values = {
+                    'result': {
+                        'id': address.id,
+                        'name': address.name,
+                        'partner_name': address.name,
+                        'email': address.email,
+                    }
+                }
+            else:
+                values = {}
         else:
             values = {}
         res = values
