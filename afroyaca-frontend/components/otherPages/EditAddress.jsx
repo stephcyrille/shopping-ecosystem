@@ -62,7 +62,7 @@ export default function EditAddress() {
         {userData ? 
           <div className="page-content my-account__address">
             <p className="notice">
-              {"Les adresses suivantes seront utilisée par défaut pendant la commande."}
+              {"Les adresses suivantes seront utilisées par défaut au moment de passer la commande."}
             </p>
             <div className="my-account__address-list">
               {userData.map((elm, id) => (

@@ -6,6 +6,7 @@ import { Loader } from "../common/Loader";
 export default function EditAccount() {
   const [ userData, setUserData ] = useState(null);
   const [ loading, setLoading ] = useState(false);
+  const [ isUpdated, setIsUpdated ] = useState(false);
   const hasFetched = useRef(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -14,7 +15,8 @@ export default function EditAccount() {
     email: "",
     currentPassword: "",
     newPassword: "",
-    confirmPassword: ""
+    confirmPassword: "",
+    id: null,
   });
   const [errors, setErrors] = useState({});
 
@@ -48,13 +50,13 @@ export default function EditAccount() {
           } else {
             let res_data = await res.json();
             let data = res_data.data;
-            console.log('===> ProfilE <======', data)
             setFormData({
               ...formData,
-              firstName: data.name,
-              lastName: data.name,
+              firstName: data.firstname,
+              lastName: data.lastname,
               displayName: data.name,
               email: data.email,
+              id: data.id,
             });
             setUserData(data);
           }
@@ -77,6 +79,8 @@ export default function EditAccount() {
       [e.target.id]: e.target.value,
     });
 
+    setIsUpdated(false);
+
     setErrors((prevErrors) => ({
       ...prevErrors,
       submit: null,
@@ -91,6 +95,122 @@ export default function EditAccount() {
     }
   };
 
+  const validateProfileForm = () => {
+    let newErrors = {};
+    if (!formData.firstName) newErrors.firstName = "Le nom est requis.";
+    if (!formData.lastName) newErrors.lastName = "Le prénom est requis.";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  
+  const validatePasswordForm = () => {
+    let newErrors = {};
+    if (!formData.currentPassword) newErrors.currentPassword = "Le mot de passe actuel est requis.";
+    if (!formData.newPassword) newErrors.newPassword = "Le nouveau mot de passe est requis.";
+    if (!formData.confirmPassword) newErrors.confirmPassword = "La confirmation du mot de passe est requise.";
+    else if (formData.confirmPassword !== formData.newPassword) newErrors.confirmPassword = "La confirmation du mot de passe doit être identique au nouveau mot de passe.";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmitProfile = async (e) => {
+    setLoading(true);
+    e.preventDefault();
+    if (validateProfileForm()) {
+      console.log('========= SUBMIT =========', formData);
+      let postData = {
+        firstname: formData.firstName,
+        lastname: formData.lastName,
+        id: formData.id
+      }
+
+      try {
+        let token = JSON.parse(localStorage.getItem("authToken"));
+        let access_token = token && token.access;
+        let res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/apis/profile/update`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `JWT ${access_token}`
+          },
+          body: JSON.stringify(postData),
+          credentials: 'include' 
+        });
+
+        if (!res.ok){
+          let res_data = await res.json();
+          let errors = {};
+          errors.submit = res_data.detail;
+          setErrors(errors);
+          setLoading(false);
+        } else {
+          let res_data = await res.json();
+          
+          if (res_data){
+            let data = res_data;
+            setFormData({
+              ...formData,
+              displayName: data.name,
+            });
+            setLoading(false);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to update user data:", error);
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleSubmitPasswordUpdate = async (e) => {
+    setLoading(true);
+    e.preventDefault();
+    if (validatePasswordForm()) {
+      let postData = {
+        current_password: formData.currentPassword,
+        new_password: formData.newPassword,
+        re_new_password: formData.confirmPassword,
+      }
+
+      try {
+        let token = JSON.parse(localStorage.getItem("authToken"));
+        let access_token = token && token.access;
+        let res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/users/set_password/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `JWT ${access_token}`
+          },
+          body: JSON.stringify(postData),
+          credentials: 'include' 
+        });
+
+        if (!res.ok){
+          let res_data = await res.json();
+          let newErrors = {};
+          if (res_data.current_password) newErrors.currentPassword = res_data.current_password[0]
+          if (res_data.new_password) newErrors.newPassword = res_data.new_password.length > 1 ? res_data.new_password[0] + ' and ' + res_data.new_password[1] : res_data.new_password[0]
+          setErrors(newErrors);
+          setLoading(false);
+        } else {
+          setFormData({
+            ...formData,
+            currentPassword: "",
+            newPassword: "",
+            confirmPassword: "",
+          });
+          setIsUpdated(true);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Failed to update user password:", error);
+        setLoading(false);
+      }
+    } else {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <Loader isLoading={loading} />
@@ -98,7 +218,7 @@ export default function EditAccount() {
         <div className="page-content my-account__edit">
           <div className="my-account__edit-form">
             <form
-              onSubmit={(e) => e.preventDefault()}
+              onSubmit={handleSubmitProfile}
               className="needs-validation"
             >
               <div className="row">
@@ -111,9 +231,9 @@ export default function EditAccount() {
                       placeholder={"Nom"}
                       value={formData.firstName}
                       onChange={handleInputChange}
-                      required
                     />
                     <label htmlFor="firstName">{"Nom"}</label>
+                    {errors.firstName && <small className="text-danger">{errors.firstName}</small>}
                   </div>
                 </div>
                 <div className="col-md-6">
@@ -125,9 +245,9 @@ export default function EditAccount() {
                       placeholder={"Prénom"}
                       value={formData.lastName}
                       onChange={handleInputChange}
-                      required
                     />
                     <label htmlFor="lastName">{"Prénom"}</label>
+                    {errors.lastName && <small className="text-danger">{errors.lastName}</small>}
                   </div>
                 </div>
                 <div className="col-md-12">
@@ -167,7 +287,7 @@ export default function EditAccount() {
             </form>
 
             <form
-              onSubmit={(e) => e.preventDefault()}
+              onSubmit={handleSubmitPasswordUpdate}
               className="needs-validation"
             >
               <div className="row">
@@ -183,11 +303,11 @@ export default function EditAccount() {
                       className="form-control"
                       id="currentPassword"
                       placeholder={"Mot de passe actuel"}
-                      required
+                      value={formData.currentPassword}
+                      onChange={handleInputChange}
                     />
-                    <label htmlFor="currentPassword">
-                      {"Mot de passe actuel"}
-                    </label>
+                    <label htmlFor="currentPassword">{"Mot de passe actuel"}</label>
+                    {errors.currentPassword && <small className="text-danger">{errors.currentPassword}</small>}
                   </div>
                 </div>
                 <div className="col-md-12">
@@ -197,9 +317,11 @@ export default function EditAccount() {
                       className="form-control"
                       id="newPassword"
                       placeholder={"Nouveau mot de passe"}
-                      required
+                      value={formData.newPassword}
+                      onChange={handleInputChange}
                     />
                     <label htmlFor="newPassword">{"Nouveau mot de passe"}</label>
+                    {errors.newPassword && <small className="text-danger">{errors.newPassword}</small>}
                   </div>
                 </div>
                 <div className="col-md-12">
@@ -210,19 +332,21 @@ export default function EditAccount() {
                       data-cf-pwd="#newPassword"
                       id="confirmPassword"
                       placeholder={"Confirmation du mot de passe"}
-                      required
+                      value={formData.confirmPassword}
+                      onChange={handleInputChange}
                     />
-                    <label htmlFor="confirmPassword">
-                      {"Confirmation du mot de passe"}
-                    </label>
-                    <div className="invalid-feedback">
-                      Passwords did not match!
-                    </div>
+                    <label htmlFor="confirmPassword">{"Confirmation du mot de passe"}</label>
+                    {errors.confirmPassword && <small className="text-danger">{errors.confirmPassword}</small>}
                   </div>
                 </div>
                 <div className="col-md-12 text-end">
                   <div className="my-3">
-                    <button className="btn btn-primary">{"Modifier le mot de passe"}</button>
+                    <button 
+                      className="btn btn-primary"
+                      disabled={isUpdated}
+                    >
+                      {isUpdated ? "Mot de passe mis à jour !" : "Modifier le mot de passe"}
+                    </button>
                   </div>
                 </div>
               </div>

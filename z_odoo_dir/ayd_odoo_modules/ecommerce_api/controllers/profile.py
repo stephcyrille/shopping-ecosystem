@@ -79,6 +79,8 @@ class EcommerceProfilessAPI(http.Controller):
                     'result': {
                         'id': address.id,
                         'name': address.name,
+                        'firstname': address.firstname,
+                        'lastname': address.lastname,
                         'partner_name': address.name,
                         'email': address.email,
                     }
@@ -94,3 +96,42 @@ class EcommerceProfilessAPI(http.Controller):
             status=200,
             mimetype='application/json'
         )
+    
+    @http.route(['/apis/profile/update'], type='json', auth="user", methods=['POST'], website=True, csrf=False)
+    def update_user_name(self, **kwargs):
+        json_data = json.loads(http.request.httprequest.data)
+
+        firstname = json_data.get('firstname') if json_data.get('firstname') else None
+        lastname = json_data.get('lastname') if json_data.get('lastname') else None
+        id = int(json_data.get('id')) if json_data.get('id') else None
+
+        profile = http.request.env['res.partner'].sudo().search([('id', '=', id)], limit=1)
+
+        if profile:
+            for rec in profile:
+                rec.write({
+                    'firstname': firstname,
+                    'lastname': lastname,
+                    'name': f"{lastname} {firstname}",
+                })
+            values = {
+                'id': profile.id,
+                'name': profile.name,
+                'firstname': profile.firstname,
+                'lastname': profile.lastname,
+                'partner_name': profile.name,
+                'email': profile.email,
+            }
+            res = {
+                "code": 201,
+                "data": values,
+            }
+            return res
+        else:
+            res = {
+                "code": 404,
+                "errorMessage": f"Update profile server side error",
+                "message": f"Res partner profile {id} not found"
+            }
+            return res
+

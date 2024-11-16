@@ -6,3 +6,4 @@ from . import sale_order
 from . import website
 from . import page_picture
 from . import sale_order_line
+from . import res_partner

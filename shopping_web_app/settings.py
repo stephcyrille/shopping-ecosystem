@@ -214,5 +214,5 @@ SIMPLE_JWT = {
 DJOSER = {
     'ACTIVATION_URL': 'auth/users/activation/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
-    "LOGOUT_ON_PASSWORD_CHANGE": True
+    'SET_PASSWORD_RETYPE': True
 }

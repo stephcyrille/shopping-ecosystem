@@ -199,11 +199,11 @@ export const dashboardMenuItems = [
     href: "/account_edit",
     title: "Détails du compte",
   },
-  {
-    id: 5,
-    href: "/account_wishlist",
-    title: "Liste d'envie",
-  },
+  // {
+  //   id: 5,
+  //   href: "/account_wishlist",
+  //   title: "Liste d'envie",
+  // },
   {
     id: 6,
     href: "#",
