@@ -112,7 +112,40 @@ class EcommerceProfilessAPI(http.Controller):
 
         firstname = json_data.get('firstname') if json_data.get('firstname') else None
         lastname = json_data.get('lastname') if json_data.get('lastname') else None
+        email = json_data.get('email') if json_data.get('email') else None
         id = int(json_data.get('id')) if json_data.get('id') else None
+
+        if id is None and email:
+            profile = http.request.env['res.partner'].sudo().search([('email', '=', email)], limit=1)
+            if not profile:
+                profile = http.request.env['res.partner'].sudo().create({
+                    'firstname': firstname,
+                    'lastname': lastname,
+                    'type': 'delivery',
+                    'name': f"{lastname} {firstname}",
+                    'email': email,
+                })
+            else:
+                for rec in profile:
+                    rec.write({
+                        'firstname': firstname,
+                        'lastname': lastname,
+                        'type': 'delivery',
+                        'name': f"{lastname} {firstname}",
+                    })
+            values = {
+                'id': profile.id,
+                'name': profile.name,
+                'firstname': profile.firstname,
+                'lastname': profile.lastname,
+                'partner_name': profile.name,
+                'email': profile.email,
+            }
+            res = {
+                "code": 201,
+                "data": values,
+            }
+            return res
 
         profile = http.request.env['res.partner'].sudo().search([('id', '=', id)], limit=1)
 

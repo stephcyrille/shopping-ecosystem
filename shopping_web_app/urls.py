@@ -28,10 +28,12 @@ from myproxy.apis.cart_apis import *
 from myproxy.apis.page_pictures_apis import *
 from myproxy.apis.webhook import *
 from myproxy.apis.address_apis import *
+from myproxy.apis.auth.signup_api import *
 
 urlpatterns = [
     re_path(r'^auth/', include('djoser.urls')),
     re_path(r'^auth/', include('djoser.urls.jwt')),
+    path('apis/auth/signup', CustomSignupView.as_view()),
     path('apis/', GetUserCartSessionAPIViews.as_view()),
     path('admin/', admin.site.urls),
     path('apis/init', GetSessionIdViews.as_view()),

@@ -214,5 +214,11 @@ SIMPLE_JWT = {
 DJOSER = {
     'ACTIVATION_URL': 'auth/users/activation/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
-    'SET_PASSWORD_RETYPE': True
+    'SET_PASSWORD_RETYPE': True,
+    'SERIALIZERS': {
+        'user_create': 'myproxy.auth.user_serializer.CustomUserCreateSerializer',
+    },
 }
+
+# My custom user AUth Model created
+AUTH_USER_MODEL = 'myproxy.AydCustomUser'
