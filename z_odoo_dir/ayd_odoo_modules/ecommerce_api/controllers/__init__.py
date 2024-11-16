@@ -4,3 +4,4 @@ from . import auth_api
 from . import banners_apis
 from . import collections_apis
 from . import page_picture_api
+from . import address

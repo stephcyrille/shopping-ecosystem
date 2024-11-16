@@ -54,7 +54,6 @@ export default function AccountOrders() {
           } else {
             let res_data = await res.json();
             let data = res_data.data;
-            console.log('==----.../////')
             
             setUserData(data);
           }
@@ -102,7 +101,7 @@ export default function AccountOrders() {
                     </span>
                   </td>
                   <td>
-                    <button className="btn btn-primary">VIEW</button>
+                    <button className="btn btn-primary">{"VOIR"}</button>
                   </td>
                 </tr>
               ))}

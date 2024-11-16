@@ -21,7 +21,7 @@ Ecommerce REST API module: contains multiple routes
     'version': '16.1.0',
 
     # any module necessary for this one to work correctly
-    'depends': ['sale_management', 'web', 'website', 'stock', 'website_sale'],
+    'depends': ['sale_management', 'web', 'website', 'stock', 'website_sale', 'contacts'],
 
     # always loaded
     'data': [

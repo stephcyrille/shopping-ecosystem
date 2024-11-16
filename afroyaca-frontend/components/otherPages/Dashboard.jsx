@@ -2,19 +2,16 @@
 
 import React, {useState, useEffect, useRef} from "react";
 import Link from "next/link";
-import { useContextElement } from "@/context/Context";
 import { Loader } from "../common/Loader";
 
 export default function Dashboard() {
-  const { userToken } = useContextElement();
   const [ userData, setUserData ] = useState(null);
   const [ loading, setLoading ] = useState(false);
   const hasFetched = useRef(false);
 
   useEffect(() => {
-    setLoading(true);
     let token = JSON.parse(localStorage.getItem("authToken"));
-
+    
     if (!token){
       window.document.location = "/";
     }
@@ -22,6 +19,8 @@ export default function Dashboard() {
     async function getUserInfo() {
       if (hasFetched.current) return; // Avoid re-running
       hasFetched.current = true;
+      setLoading(true);
+
       let access_token = token && token.access;
 
       if (access_token) {
@@ -41,7 +40,6 @@ export default function Dashboard() {
             let res_data = await res.json();
             let data = res_data;
             
-            console.log('=====>>>>Res data', data)
             setUserData(data);
           }
           setLoading(false);
