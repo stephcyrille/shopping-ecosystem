@@ -54,7 +54,7 @@ export default function EditAccount() {
               ...formData,
               firstName: data.firstname || '',
               lastName: data.lastname || '',
-              displayName: data.name || '',
+              displayName: data.lastname + ' ' + data.firstname || '',
               email: data.email || '',
               id: data.id,
             });
