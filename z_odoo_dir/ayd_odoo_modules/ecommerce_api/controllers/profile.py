@@ -37,6 +37,8 @@ class EcommerceProfilessAPI(http.Controller):
                             'id': o.id,
                             'partner_name': address.name,
                             'name': o.name,
+                            'firstname': o.firstname,
+                            'lastname': o.lastname,
                             'type': o.type,
                             'street': o.street,
                             'street2': o.street2,
@@ -55,6 +57,8 @@ class EcommerceProfilessAPI(http.Controller):
                         {
                             'id': address.id,
                             'name': address.name,
+                            'firstname': address.firstname,
+                            'lastname': address.lastname,
                             'partner_name': address.name,
                             'type': address.type,
                             'street': address.street,

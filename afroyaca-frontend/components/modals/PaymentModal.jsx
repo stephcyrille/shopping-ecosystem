@@ -141,7 +141,7 @@ export default function PaymentModal({
                         </form>
                       </> : paymentErrors ? 
                       <>
-                        <div className="badge text-start p-3 d-block bg-danger mb-4" style={{ fontSize: "0.9rem", color: "red" }}>
+                        <div className="badge text-start p-3 d-block mb-4" style={{ fontSize: "0.9rem", color: "red" }}>
                           <ul className="m-0">
                             <li>{paymentErrors.errorMessage && paymentErrors.errorMessage}</li>
                             <li>{paymentErrors.message && paymentErrors.message}</li>

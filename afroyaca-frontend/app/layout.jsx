@@ -5,16 +5,16 @@ import "../public/assets/css/plugins/swiper.min.css";
 import "../public/assets/sass/style.scss";
 import "rc-slider/assets/index.css";
 import "tippy.js/dist/tippy.css";
-import LoginFormPopup from "@/components/common/LoginFormPopup";
+// import LoginFormPopup from "@/components/common/LoginFormPopup";
 import { useEffect } from "react";
 import ScrollTop from "@/components/common/ScrollTop";
 import Context from "@/context/Context";
 import CurrencyProvider from "@/context/CurrencyContext";
 import QuickView from "@/components/modals/QuickView";
 import CartDrawer from "@/components/shopCartandCheckout/CartDrawer";
-import SiteMap from "@/components/modals/SiteMap";
-import NewsLetter from "@/components/modals/NewsLetter";
-import CookieContainer from "@/components/common/CookieContainer";
+// import SiteMap from "@/components/modals/SiteMap";
+// import NewsLetter from "@/components/modals/NewsLetter";
+// import CookieContainer from "@/components/common/CookieContainer";
 import MobileHeader from "@/components/headers/MobileHeader";
 import SizeGuide from "@/components/modals/SizeGuide";
 import Delivery from "@/components/modals/Delivery";
@@ -105,10 +105,10 @@ export default function RootLayout({ children }) {
             {children}
             <MobileFooter1 />
             {/* //modals and asides */}
-            <LoginFormPopup />
+            {/* <LoginFormPopup /> */}
             <QuickView />
             {/* <NewsLetter /> */}
-            <CookieContainer />
+            {/* <CookieContainer /> */}
             <SizeGuide />
             <Delivery />
             <CartDrawer />

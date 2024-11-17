@@ -23,7 +23,8 @@ export default function AddressEditModal({setIsModalOpen, isOpen, address, formS
     let token = JSON.parse(localStorage.getItem("authToken"));
     
     if (!token){
-      window.document.location = "/";
+      // window.document.location = "/";
+      return;
     }
 
     async function getUserInfo() {

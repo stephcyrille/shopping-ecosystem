@@ -1,20 +1,22 @@
 "use client";
 import { useContextElement } from "@/context/Context";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { useCurrency } from "@/context/CurrencyContext";
-import { formatNumber } from "@/utlis/nber_parsing";
-import Image from "next/image";
 import PaymentModal from "../modals/PaymentModal";
 import { Loader } from "../common/Loader";
+import { CheckoutFormUser } from "./checkout/CheckoutFormUser";
+import { CheckoutProductDetail } from "./checkout/CheckoutProductDetail";
+import { CheckoutPaiementSelect } from "./checkout/CheckoutPaiementSelect";
+import AddressEditModal from "../modals/AddressEditModal";
 
 const countries = [
   "Cameroun",
 ];
 
 
-export default function Checkout() {
+export default function   Checkout() {
   const router = useRouter();
   const { cartProducts, totalPrice, deliveryMethod, handleDeliveryMethod,
     paiementMethod, handlePaiementMethod, setCartProducts,
@@ -37,7 +39,6 @@ export default function Checkout() {
     companyName: "",
     phoneConfirmation: ""
   });
-  
   const [errors, setErrors] = useState({});
   const [isAccountCreated, setIsAccountCreated] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,18 +47,86 @@ export default function Checkout() {
   const [serverMsg, setServerMsg] = useState(null);
   const [loading, setLoading] = useState(false);
   const [trxRef, setTrxRef] = useState('');
-  
+  const hasFetched = useRef(false);
+  const [ userData, setUserData ] = useState(null);
+  const refs = useRef([]); // Create a ref array for all elements
+  const [ selectedAddress, setSelectedAddress ] = useState(null);
+  const [ modalIsOpen, setModelIsOpen ] = useState(false);
+  const [ editAddress, setEditAddress ] = useState({});
+  const [ isConnected, setIsConnected ] = useState(false);
+
+  const handleMouseEnter = (index) => {
+    const element = refs.current[index];
+    if (element) {
+      element.style.transform = 'scale(1.02)';
+      element.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+      element.style.transition = 'transform 0.3s, box-shadow 0.3s';
+    }
+  };
+
+  const handleMouseLeave = (index) => {
+    const element = refs.current[index];
+    if (element) {
+      element.style.transform = 'scale(1)';
+      element.style.boxShadow = 'none';
+    }
+  };
+
+  useEffect(() => {
+    let token = JSON.parse(localStorage.getItem("authToken"));
+    
+    if (!token){
+      setIsConnected(false);
+    }
+    
+    async function getUserAddress() {
+      if (hasFetched.current) return; // Avoid re-running
+      hasFetched.current = true;
+      setLoading(true);
+      
+      let access_token = token && token.access;
+
+      if (access_token) {
+        setIsConnected(true);
+        try {
+          let res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/apis/get/addresses`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `JWT ${access_token}`
+            },
+            credentials: 'include' 
+          });
+
+          if (!res.ok){
+            return;
+          } else {
+            let res_data = await res.json();
+            let data = res_data.data;
+            if (data){
+              setUserData(data);
+            } 
+            
+          }
+          setLoading(false);
+        } catch (error) {
+          console.error("Failed to fetch addresses elements list:", error);
+          setLoading(false);
+        }
+      }
+      setLoading(false);
+    }
+    
+    getUserAddress();
+    setLoading(false);
+  }, []);
+
   useEffect(()=>{
-    setLoading(true);
     if(checkoutStep === 1 || checkoutStep === 0){
       router.push('/cart');
     } else if (checkoutStep === 3){
       router.push('/cart');
     }
-
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000)
   }, []);
 
   useEffect(() => {
@@ -95,17 +164,7 @@ export default function Checkout() {
 
   const validateForm = () => {
     let newErrors = {};
-    if (!formData.firstName) newErrors.firstName = "Le prénom est requis.";
-    if (!formData.lastName) newErrors.lastName = "Le nom est requis.";
-    if (!formData.email) newErrors.email = "L'email est requise.";
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "L'email est invalide.";
-    if (!formData.phone) newErrors.phone = "Le numéro de téléphone est requis.";
-    else if (!/^\d{9}$/.test(formData.phone)) newErrors.phone = "Le numéro de téléphone doit contenir 9 chiffres.";
-    if (!formData.address) newErrors.address = "L'adresse est requise.";
-    if (!formData.city) newErrors.city = "La ville est requise.";
-    if (!formData.zipCode) newErrors.zipCode = "Le code postal est requis.";
-    if (!formData.region) newErrors.region = "La région est requise.";
-    if (!selectedRegion) newErrors.country = "Veillez choisir un pays dans la liste.";
+    if (!selectedAddress) newErrors.address = "Veuillez cliquer sur l'addresse de livraison.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -115,10 +174,20 @@ export default function Checkout() {
     if (validateForm()) {
       setPhoneConfirmed(false);
       setIsModalOpen(true);
-      setFormData({
-        ...formData,
-        ['phoneConfirmation']: formData.phone,
-      });
+      if (selectedAddress) {
+        setFormData({
+          ...formData,
+          ['phoneConfirmation']: selectedAddress.phone,
+        });
+        console.log("Slected ====>>", selectedAddress);
+      } else {
+        console.log("No selected address ====>>");
+      }
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        global: "Bien vouloir remplir le formulaire correctement !",
+      }));
     }
   };
   
@@ -126,7 +195,7 @@ export default function Checkout() {
     let newErrors = {};
     if (!formData.phoneConfirmation) newErrors.phoneConfirmation = "Le numéro de téléphone est requis.";
     else if (!/^\d{9}$/.test(formData.phoneConfirmation)) newErrors.phoneConfirmation = "Le numéro de téléphone doit contenir 9 chiffres.";
-    else if (formData.phoneConfirmation !== formData.phone) newErrors.phoneConfirmation = "Le numéro de téléphone doit être identique à celui saisi dans le formulaire.";
+    else if (formData.phoneConfirmation !== selectedAddress.phone) newErrors.phoneConfirmation = "Le numéro de téléphone doit être identique à celui de l'adresse sélectionnée.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -141,16 +210,15 @@ export default function Checkout() {
       setPhoneConfirmed(true);
       setIsLoading(true);
 
-      let user = null;
       let data = {
         amount : deliveryMethod === 'paid' ? totalPrice + 1500 : totalPrice,
-        description : `Afro Yaca Drum Website Paiement ${user ? user.username : `${formData.firstName} ${formData.lastName}`} (${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()})`,
+        description : `Afro Yaca Drum Website Paiement ${selectedAddress && `${selectedAddress.firstname} ${selectedAddress.lastname}`} (${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()})`,
         reference : `REF#${cartProducts[0].cart_id}`,
-        customer_email : user ? user.email : formData.email,
-        customer_name : user ? `${user.firstName} ${user.name}` : `${formData.firstName} ${formData.lastName}`,
-        customer_mobile : user ? `+237${user.phone}` : `+237${formData.phone}`,
-        customer_street : user ? user.address : formData.address,
-        customer_city : user ? user.city : formData.city,
+        customer_email : selectedAddress && selectedAddress.email,
+        customer_name : selectedAddress && `${selectedAddress.firstname} ${selectedAddress.lastname}`,
+        customer_mobile : formData.phoneConfirmation && `+237${formData.phoneConfirmation}`,
+        customer_street : selectedAddress && selectedAddress.street,
+        customer_city : selectedAddress && selectedAddress.city,
         channel : paiementMethod,
         delivery_fee : deliveryMethod === 'paid' ? 1500 : 0,
       }
@@ -255,9 +323,53 @@ export default function Checkout() {
     }
   };
 
+  const handleUpdateAddress = async (postData) => {
+    setLoading(true);
+
+     try {
+        let token = JSON.parse(localStorage.getItem("authToken"));
+        let access_token = token && token.access;
+        let res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/apis/address/update`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `JWT ${access_token}`
+          },
+          body: JSON.stringify(postData),
+          credentials: 'include' 
+        });
+
+        if (!res.ok){
+          let res_data = await res.json();
+          let errors = {};
+          errors.submit = res_data.detail;
+          setLoading(false);
+        } else {
+          let res_data = await res.json();
+          
+          if (res_data){
+            let data = res_data;
+            setLoading(false);
+            setModelIsOpen(false);
+            setUserData(data.result);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to update user data:", error);
+        setLoading(false);
+      }
+  }
+
   return (
     <>
       <Loader isLoading={loading} />
+
+      <AddressEditModal 
+        setIsModalOpen={setModelIsOpen} 
+        isOpen={modalIsOpen} 
+        address={editAddress} 
+        formSubmit={handleUpdateAddress} 
+      />
       {checkoutStep === 2 && <>
         <PaymentModal 
           isOpen={isModalOpen} 
@@ -272,377 +384,137 @@ export default function Checkout() {
           ussdMsg={ussdConfirm}
           handleCheckPaiement={handleConfirmUssdPayment}
         />
-        <form onSubmit={handleSubmit}>
-          <div className="checkout-form">
-            <div className="billing-info__wrapper">
-              <h4>{"DETAIL DE FACTURATION"}</h4>
-              <div className="row">
-                <div className="col-md-6">
-                  <div className="form-floating my-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="firstName"
-                      placeholder="Prénom"
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                    />
-                    <label htmlFor="firstName">{"Prénom *"}</label>
-                    {errors.firstName && <small className="text-danger">{errors.firstName}</small>}
-                  </div>
-                </div>
-                <div className="col-md-6">
-                  <div className="form-floating my-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="lastName"
-                      placeholder="Nom"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                    />
-                    <label htmlFor="lastName">{"Nom *"}</label>
-                    {errors.lastName && <small className="text-danger">{errors.lastName}</small>}
-                  </div>
-                </div>
-                <div className="col-md-12">
-                  <div className="form-floating my-3">
-                    <input
-                      type="email"
-                      className="form-control"
-                      id="email"
-                      placeholder="Email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                    />
-                    <label htmlFor="email">{"Email *"}</label>
-                    {errors.email && <small className="text-danger">{errors.email}</small>}
-                  </div>
-                </div>
-                <div className="col-md-12">
-                  <div className="form-floating my-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="companyName"
-                      placeholder={"Nom de la société (optionel)"}
-                      value={formData.companyName}
-                      onChange={handleInputChange}
-                    />
-                    <label htmlFor="companyName">
-                      {"Nom de la société (optionel)"}
-                    </label>
-                  </div>
-                </div>
-                <div className="col-md-12">
-                  <div className="search-field my-3">
-                    <div
-                      className={`form-label-fixed hover-container ${
-                        idDDActive ? "js-content_visible" : ""
-                      }`}
+
+          <form onSubmit={handleSubmit}>
+            <div className="checkout-form">
+              <div className="billing-info__wrapper">
+                <Link href={"/cart"} className="btn btn-link mb-4">{"< Revenir au panier"}</Link>
+                {userData && userData.length > 0 ? <h4 className="my-3">{"Sélectionner l'addresse de livraison"}</h4> : isConnected ? <h4>{"LIVRAISON & FACTURATION"}</h4> : ''}
+                
+                {isConnected ? <>  
+                  {userData && userData.length > 0 ? 
+                  userData.map((elm, id) => (
+                    <div 
+                      className={`my-account__address-item border ${selectedAddress && selectedAddress.id === elm.id && 'border-secondary border-2'} mb-4 p-4 cursor-pointer`} 
+                      key={id}
+                      ref={(el) => (refs.current[id] = el)} // Assign each element to the ref array
+                      onMouseEnter={() => handleMouseEnter(id)}
+                      onMouseLeave={() => handleMouseLeave(id)}
                     >
-                      <label htmlFor="search-dropdown" className="form-label">
-                        {"Pays *"}
-                      </label>
-                      <div className="js-hover__open">
-                        <input
-                          type="text"
-                          className="form-control form-control-lg search-field__actor search-field__arrow-down"
-                          id="search-dropdown"
-                          name="search-keyword"
-                          value={selectedRegion}
-                          readOnly
-                          placeholder={"Choisissez la localisation..."}
+                      <div className="my-account__address-item__title">
+                        <h5>{`Adresse ${elm.type === 'delivery' ? 'de livraison' : elm.type === 'invoice' ? 'de facturation' : (id + 1)}`}</h5>
+                        <a 
+                          href="#" 
                           onClick={() => {
-                            errors.country = ""
-                            setIdDDActive((pre) => !pre)}
+                            let addressData = elm;
+                            console.log(elm)
+                            addressData.add = "update";
+                            setEditAddress(addressData);
+                            setModelIsOpen(true);
+                          }}
+                        >{"Modifier"}</a>
+                      </div>
+                      <div 
+                        className="my-account__address-item__detail"
+                        onClick={() => {
+                          let newErrors = {};
+                          newErrors.address = ''
+                          setErrors(newErrors);
+                          setSelectedAddress(elm);
+                        }}
+                      >
+                        <p>{elm.partner_name}</p>
+                        <p>{elm.street}{elm.street2 && ', ' + elm.street2}{elm.region && ', ' + elm.region}, {elm.city} {elm.zip && elm.zip}</p>
+                        <p>{elm.country}</p>
+                        <br />
+                        <p>{elm.email}</p>
+                        <p>{elm.phone}</p>
+                      </div>
+                    </div>
+                  ))
+                  :
+                  <div className="page-content my-account__wishlist h-50">
+                    <div className="fs-18">
+                    {'Vous n\'avez ajouté aucune adresse pour l\'instant'}
+                    </div>
+
+                    <div className="boutton-wrapper h-50 py-4">
+                      <button 
+                        className="btn btn-outline-secondary w-100 h-100 text-uppercase"
+                        onClick={() => {
+                          let value = {
+                            add: "new",
+                            id: 0,
+                            country: "Cameroun"
                           }
-                        />
-                      </div>
-                      <div className="filters-container js-hidden-content mt-2">
-                        <div className="search-field__input-wrapper">
-                          <input
-                            type="text"
-                            className="search-field__input form-control form-control-sm bg-lighter border-lighter"
-                            placeholder="Search"
-                            onChange={(e) => {
-                              setSearchQuery(e.target.value);
-                            }}
-                          />
-                        </div>
-                        <ul className="search-suggestion list-unstyled">
-                          {countries
-                            .filter((elm) =>
-                              elm.toLowerCase().includes(searchQuery.toLowerCase())
-                            )
-                            .map((elm, i) => (
-                              <li
-                                onClick={() => {
-                                  setSelectedRegion(elm);
-                                  setIdDDActive(false);
-                                }}
-                                key={i}
-                                className="search-suggestion__item js-search-select"
-                              >
-                                {elm}
-                              </li>
-                            ))}
-                        </ul>
-                      </div>
-                      {errors.country && <small className="text-danger">{errors.country}</small>}
+                          setEditAddress(value);
+                          setModelIsOpen(true);
+                        }}
+                      >
+                        + <br />
+                        Ajouter une addresse
+                      </button>
                     </div>
                   </div>
-                </div>
-                <div className="col-md-12">
-                  <div className="form-floating mt-3 mb-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="address"
-                      placeholder="Adresse"
-                      value={formData.address}
-                      onChange={handleInputChange}
+                  // <CheckoutFormUser 
+                  // formData={formData}
+                  // handleInputChange={handleInputChange}
+                  // errors={errors}
+                  // idDDActive={idDDActive}
+                  // selectedRegion={selectedRegion}
+                  // setIdDDActive={setIdDDActive}
+                  // setSearchQuery={setSearchQuery}
+                  // countries={countries}
+                  // isAccountCreated={isAccountCreated}
+                  // handleCheckboxChange={handleCheckboxChange}
+                  // searchQuery={searchQuery}
+                  // setSelectedRegion={setSelectedRegion}
+                  // />
+                  }
+                {errors.address && <small className="text-danger text-start d-block pt-2">
+                  {errors.address}</small>}
+                </> : 
+                <div className="my-4 text-center">
+                  <svg
+                    className="d-block w-100 text-center"
+                    width="80"
+                    height="80"
+                    viewBox="0 0 20 20"
+                    fill="#000000"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <use href="#icon_user" />
+                  </svg>
+
+                  <h5 className="pt-4">{"Vous devez être connecter pour passer une commande."}</h5>
+                  <Link className="btn btn-outline-dark rounded my-3" href={"/login?next=/checkout"}>{"Se connecter"}</Link>
+                </div>}
+              </div>
+
+              <div className="checkout__totals-wrapper">
+                <div className="sticky-content">
+                  <CheckoutProductDetail 
+                    cartProducts={cartProducts}
+                    totalPrice={totalPrice}
+                    currency={currency}
+                    deliveryMethod={deliveryMethod}
+                  />
+                  {isConnected && <>
+                    <CheckoutPaiementSelect 
+                      selectedPaiementMethod={selectedPaiementMethod}
+                      handleRadioButtonChange={handleRadioButtonChange}
                     />
-                    <label htmlFor="address">{"Adresse *"}</label>
-                    {errors.address && <small className="text-danger">{errors.address}</small>}
-                  </div>
-                </div>
-                <div className="col-md-12">
-                  <div className="form-floating my-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="city"
-                      placeholder="Ville"
-                      value={formData.city}
-                      onChange={handleInputChange}
-                    />
-                    <label htmlFor="city">{"Ville *"}</label>
-                    {errors.city && <small className="text-danger">{errors.city}</small>}
-                  </div>
-                </div>
-                <div className="col-md-12">
-                  <div className="form-floating my-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="zipCode"
-                      placeholder="Code postal"
-                      value={formData.zipCode}
-                      onChange={handleInputChange}
-                    />
-                    <label htmlFor="zipCode">{"Code postal *"}</label>
-                    {errors.zipCode && <small className="text-danger">{errors.zipCode}</small>}
-                  </div>
-                </div>
-                <div className="col-md-12">
-                  <div className="form-floating my-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="region"
-                      placeholder="Région (Province)"
-                      value={formData.region}
-                      onChange={handleInputChange}
-                    />
-                    <label htmlFor="region">{"Région *"}</label>
-                    {errors.region && <small className="text-danger">{errors.region}</small>}
-                  </div>
-                </div>
-                <div className="col-md-12">
-                  <div className="form-floating my-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="phone"
-                      placeholder="Téléphone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                    />
-                    <label htmlFor="phone">{"Téléphone (sans l'indicateur regionnal)*"}</label>
-                    {errors.phone && <small className="text-danger">{errors.phone}</small>}
-                  </div>
-                </div>
-                <div className="col-md-12">
-                  <div className="form-check mt-3">
-                    <input
-                      className="form-check-input form-check-input_fill cursor-pointer"
-                      type="checkbox"
-                      value={"create"}
-                      id="create_account"
-                      checked={isAccountCreated}  // Bind to state
-                      onChange={handleCheckboxChange} 
-                    />
-                    <label className="form-check-label cursor-pointer" htmlFor="create_account">
-                      {"CRÉER UN COMPTE ?"}
-                    </label>
-                  </div>
+                    <button className="btn btn-primary btn-checkout" type="submit">
+                      {"PLACER VOTRE COMMANDE"}
+                    </button>
+                    {errors.global && <small className="text-danger text-center d-block pt-2">
+                      {errors.global}</small>}
+                  </>}
                 </div>
               </div>
             </div>
-            <div className="checkout__totals-wrapper">
-              <div className="sticky-content">
-                <div className="checkout__totals">
-                  <h3>{"Votre commande".toUpperCase()}</h3>
-                  <table className="checkout-cart-items">
-                    <thead>
-                      <tr>
-                        <th>{"PRODUIT"}</th>
-                        <th className="text-end">{"SOUS TOTAL"}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {cartProducts.map((elm, i) => (
-                        <tr key={i}>
-                          <td>
-                            {elm.title} x {elm.quantity}
-                          </td>
-                          <td className="text-end">{formatNumber(elm.price * elm.quantity)} {currency}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  <table className="checkout-totals">
-                    <tbody>
-                      <tr>
-                        <th>{"SOUS TOTAL"}</th>
-                        <td className="text-end">{formatNumber(totalPrice)} {currency}</td>
-                      </tr>
-                      <tr>
-                        <th>{"LIVRAISON"}</th>
-                        <td className="text-end">{deliveryMethod === 'paid' ? `${formatNumber(1500)} ${currency}` : `0 ${currency}` }</td>
-                      </tr>
-                      <tr>
-                        <th>{"TVA"}</th>
-                        <td className="text-end">{0} {currency}</td>
-                      </tr>
-                      <tr>
-                        <th>{"TOTAL"}</th>
-                        <td className="text-end">{ deliveryMethod === 'paid' ? formatNumber(totalPrice + 1500) : formatNumber(totalPrice) } {currency}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div className="checkout__payment-methods">
-                  <h4 className="mb-4">{"Modes de paiement"}</h4>
-                  <div className="form-check">
-                    <input
-                      className="form-check-input form-check-input_fill cursor-pointer"
-                      type="radio"
-                      name="checkout_payment_method"
-                      id="cm.orange"
-                      checked={selectedPaiementMethod === 'cm.orange'}
-                      onChange={() => handleRadioButtonChange('cm.orange')}
-                    />
-                    <label
-                      className="form-check-label cursor-pointer"
-                      htmlFor="cm.orange"
-                    >
-                      {"Orange Money CM"}
-                      <Image 
-                        width={65}
-                        height={80}
-                        loading="lazy"
-                        src={'/assets/images/payment_methods/orange.png'} 
-                        className="h-100 w-48 object-fit-cover d-block mt-2 mb-3"
-                        alt="image"
-                        style={{ width: 'auto', height: 'auto' }}
-                      />
-                    </label>
-                  </div>
-                  <div className="form-check">
-                    <input
-                      className="form-check-input form-check-input_fill cursor-pointer"
-                      type="radio"
-                      name="checkout_payment_method"
-                      id="cm.mtn"
-                      checked={selectedPaiementMethod === 'cm.mtn'}
-                      onChange={() => handleRadioButtonChange('cm.mtn')}
-                    />
-                    <label
-                      className="form-check-label cursor-pointer"
-                      htmlFor="cm.mtn"
-                    >
-                      {"MTN Mobile Money CM"}
-                      <Image 
-                        width={60}
-                        height={50}
-                        loading="lazy"
-                        src={'/assets/images/payment_methods/momo.jpg'} 
-                        className="object-fit-cover d-block mt-2 mb-3"
-                        alt="image"
-                        style={{ width: 'auto', height: 'auto' }}
-                      />
-                    </label>
-                  </div>
-                  {/* <div className="form-check">
-                    <input
-                      className="form-check-input form-check-input_fill cursor-pointer"
-                      type="radio"
-                      name="checkout_payment_method"
-                      id="bank_card"
-                      checked={selectedPaiementMethod === 'bank_card'}
-                      onChange={() => handleRadioButtonChange('bank_card')}
-                    />
-                    <label
-                      className="form-check-label cursor-pointer"
-                      htmlFor="bank_card"
-                    >
-                      {"Paiement par carte"}
-                      <Image 
-                        width={60}
-                        height={80}
-                        loading="lazy"
-                        src={'/assets/images/payment_methods/master_card.png'} 
-                        className="h-100 w-48 object-fit-cover d-block mt-2 mb-3"
-                        alt="image"
-                        style={{ width: 'auto', height: 'auto' }}
-                      />
-                    </label>
-                  </div>
-                  <div className="form-check">
-                    <input
-                      className="form-check-input form-check-input_fill cursor-pointer"
-                      type="radio"
-                      name="checkout_payment_method"
-                      id="paypal"
-                      checked={selectedPaiementMethod === 'paypal'}
-                      onChange={() => handleRadioButtonChange('paypal')}
-                    />
-                    <label
-                      className="form-check-label cursor-pointer"
-                      htmlFor="paypal"
-                    >
-                      {"Paypal"}
-                      <Image 
-                        width={60}
-                        height={80}
-                        loading="lazy"
-                        src={'/assets/images/payment_methods/paypal.png'} 
-                        className="object-fit-cover d-block"
-                        alt="image"
-                        style={{ width: 'auto', height: 'auto' }}
-                      />
-                    </label>
-                  </div> */}
-                  <div className="policy-text">
-                    Vos données personnelles vont être utilisées pour traiter votre commande, 
-                    durant votre expérience à travers le site et pour d'autres raisons décrites dans notre 
-                    <Link href="/terms" target="_blank" style={{ marginLeft: "2px" }}>
-                      {"politique de confidentialité"}
-                    </Link>
-                    .
-                  </div>
-                </div>
-                <button className="btn btn-primary btn-checkout" type="submit">
-                  {"PLACER VOTRE COMMANDE"}
-                </button>
-                {Object.keys(errors).length !== 0 && <small className="text-danger text-center d-block pt-2">
-                  {"Bien vouloir remplir le formulaire correctement !"}</small>}
-              </div>
-            </div>
-          </div>
-        </form>
+          </form>
+          
       </>}
     </>
   );
