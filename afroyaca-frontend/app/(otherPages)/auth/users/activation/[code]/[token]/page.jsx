@@ -1,16 +1,15 @@
 import FooterAll from "@/components/footers/FooterAll";
-
 import Header from "@/components/headers/Header";
-import DashboardSidebar from "@/components/otherPages/DashboardSidebar";
-import EditAccount from "@/components/otherPages/EditAccount";
 import React from "react";
+import { EmailVerification } from "@/components/otherPages/EmailVerification";
+
 
 export async function generateMetadata({ params }) {
   return {
-    title: "Détail Utilisateur | Afro Yaca Drum",
+    title: "Vérification terminée | Afro Yaca Drum",
     description: "Achétez tous les produits Afro Chic made by Afro Yaca dans notre boutique en ligne",
     openGraph: {
-      title: "Détail Utilisateur | Afro Yaca Drum",
+      title: "Confirmation terminée | Afro Yaca Drum",
       description: "Achétez tous les produits Afro Chic made by Afro Yaca dans notre boutique en ligne",
       url: "https://afroyacadrum.com",  // Replace with the actual URL of your website
       type: "website",
@@ -19,17 +18,16 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default function AccountEditPage() {
+export default function AccountOrderPage() {
   return (
     <>
       <Header />
       <main className="page-wrapper">
         <div className="mb-4 pb-4"></div>
         <section className="my-account container">
-          <h2 className="page-title">{"Détails du compte"}</h2>
+          <h2 className="page-title">{"Félicitations, votre compte est maintenant activé ! 🎉"}</h2>
           <div className="row">
-            <DashboardSidebar />
-            <EditAccount />
+            <EmailVerification />
           </div>
         </section>
       </main>

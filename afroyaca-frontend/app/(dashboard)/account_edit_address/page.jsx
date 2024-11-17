@@ -5,10 +5,21 @@ import DashboardSidebar from "@/components/otherPages/DashboardSidebar";
 import EditAddress from "@/components/otherPages/EditAddress";
 import React from "react";
 
-export const metadata = {
-  title: "Dashboard Edit Address || Uomo eCommerce React Nextjs Template",
-  description: "Uomo eCommerce React Nextjs Template",
-};
+
+export async function generateMetadata({ params }) {
+  return {
+    title: "Modifier adresse | Afro Yaca Drum",
+    description: "Achétez tous les produits Afro Chic made by Afro Yaca dans notre boutique en ligne",
+    openGraph: {
+      title: "Modifier adresse | Afro Yaca Drum",
+      description: "Achétez tous les produits Afro Chic made by Afro Yaca dans notre boutique en ligne",
+      url: "https://afroyacadrum.com",  // Replace with the actual URL of your website
+      type: "website",
+      images: "/assets/images/logo-ayd.jpg",
+    },
+  };
+}
+
 export default function AccountEditAddressPage() {
   return (
     <>
