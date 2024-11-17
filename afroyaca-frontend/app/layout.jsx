@@ -24,6 +24,8 @@ import ProductDescription from "@/components/asides/ProductDescription";
 import ProductAdditionalInformation from "@/components/asides/ProductAdditionalInformation";
 import ProductReviews from "@/components/asides/ProductReviews";
 import MobileFooter1 from "@/components/footers/MobileFooter1";
+import Script from 'next/script';
+
 
 export default function RootLayout({ children }) {
   useEffect(() => {
@@ -54,6 +56,23 @@ export default function RootLayout({ children }) {
   }, []);
   return (
     <html lang="en">
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_TRACKING_ID}`}
+        strategy="afterInteractive"
+      />
+      <Script
+        id="google-analytics"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${process.env.NEXT_PUBLIC_GA_TRACKING_ID}');
+          `,
+        }}
+      />
+      
       <head>
         <link
           href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
