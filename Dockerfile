@@ -26,6 +26,10 @@ RUN pip install gunicorn
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
+# Don't forget the migrations 
+RUN python manage.py makemigrations
+RUN python manage.py migrate
+
 # Collect static files for Nginx to serve
 RUN python manage.py collectstatic --noinput
 
