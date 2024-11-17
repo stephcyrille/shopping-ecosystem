@@ -9,7 +9,7 @@ export default function EditAddress() {
   const [ userData, setUserData ] = useState(null);
   const [ loading, setLoading ] = useState(false);
   const [ modalIsOpen, setModelIsOpen ] = useState(false);
-  const [ editAddress, setEditAddress ] = useState([]);
+  const [ editAddress, setEditAddress ] = useState({});
 
   useEffect(() => {
     let token = JSON.parse(localStorage.getItem("authToken"));
@@ -18,7 +18,7 @@ export default function EditAddress() {
       window.document.location = "/";
     }
     
-    async function getUserInfo() {
+    async function getUserAddress() {
       if (hasFetched.current) return; // Avoid re-running
       hasFetched.current = true;
       setLoading(true);
@@ -55,7 +55,7 @@ export default function EditAddress() {
       setLoading(false);
     }
     
-    getUserInfo();
+    getUserAddress();
     setLoading(false);
   }, []);
 
@@ -103,7 +103,7 @@ export default function EditAddress() {
       <AddressEditModal setIsModalOpen={setModelIsOpen} isOpen={modalIsOpen} address={editAddress} formSubmit={handleUpdateAddress} />
 
       <div className="col-lg-9">
-        {userData && userData.length > 0 ? 
+        {userData && userData.length > 0 && userData[0].street !== false ? 
           <div className="page-content my-account__address">
             <p className="notice">
               {"Les adresses suivantes seront utilisées par défaut au moment de passer la commande."}
@@ -116,7 +116,10 @@ export default function EditAddress() {
                     <a 
                       href="#" 
                       onClick={() => {
-                        setEditAddress(elm);
+                        let addressData = elm;
+                        console.log(elm)
+                        addressData.add = "update";
+                        setEditAddress(addressData);
                         setModelIsOpen(true);
                       }}
                     >{"Modifier"}</a>
@@ -131,12 +134,51 @@ export default function EditAddress() {
                   </div>
                 </div>
               ))}
+
+              {userData && userData.length == 1 &&
+              <div className="my-account__address-item">
+                <div className="boutton-wrapper w-100 h-100 text-center">
+                  <button 
+                    className="btn btn-outline-secondary w-75 h-100 text-uppercase"
+                    onClick={() => {
+                      if (userData && userData.length > 0){ 
+                        let addressData = userData[0];
+                        addressData.add = "new";
+                        setEditAddress(addressData);
+                        setModelIsOpen(true);
+                      }
+                    }}
+                  >
+                    + <br />
+                    Ajouter une nouvelle addresse
+                  </button>
+                </div>
+              </div>}
+              
             </div>
           </div>
           : 
-          <div className="page-content my-account__wishlist">
+          <div className="page-content my-account__wishlist h-100">
             <div className="fs-18">
             {'Vous n\'avez ajouté aucune adresse pour l\'instant'}
+            </div>
+
+            <div className="boutton-wrapper h-100 py-4">
+              <button 
+                className="btn btn-outline-secondary w-50 h-100 text-uppercase"
+                onClick={() => {
+                  let value = {
+                    add: "new",
+                    id: 0,
+                    country: "Cameroun"
+                  }
+                  setEditAddress(value);
+                  setModelIsOpen(true);
+                }}
+              >
+                + <br />
+                Ajouter une addresse
+              </button>
             </div>
           </div>}
       </div>

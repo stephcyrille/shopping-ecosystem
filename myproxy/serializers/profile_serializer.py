@@ -15,4 +15,5 @@ class AddressUpdateSerializer(serializers.Serializer):
     adressType = serializers.CharField()
     name = serializers.CharField()
     email = serializers.CharField()
+    add = serializers.CharField()
 

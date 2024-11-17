@@ -2,6 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 
 export default function AddressEditModal({setIsModalOpen, isOpen, address, formSubmit}) {
   const modalElement = useRef();
+  const hasFetched = useRef(false);
   const modalInstance = useRef(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -15,20 +16,75 @@ export default function AddressEditModal({setIsModalOpen, isOpen, address, formS
     country: "Cameroun",
   });
   const [errors, setErrors] = useState({});
+  const [ userEmail, setUserEmail ] = useState("");
+
+
+  useEffect(() => {
+    let token = JSON.parse(localStorage.getItem("authToken"));
+    
+    if (!token){
+      window.document.location = "/";
+    }
+
+    async function getUserInfo() {
+      if (hasFetched.current) return; // Avoid re-running
+      hasFetched.current = true;
+      let access_token = token && token.access;
+
+      if (access_token) {
+        try {
+          let res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/users/me`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `JWT ${access_token}`
+            },
+            credentials: 'include' 
+          });
+
+          if (!res.ok){
+            return;
+          } else {
+            let res_data = await res.json();
+            let data = res_data;
+            setUserEmail(data.username);
+          }
+        } catch (error) {
+          console.error("Failed to fetch cart elements list:", error);
+        }
+      }
+    }
+    
+    getUserInfo();
+  }, [])
 
   useEffect(() => {
     if (address) {
-      setFormData({
-        displayName: address.name,
-        name: address.type === "delivery" ? address.name + ', Livraison' : address.type === "invoice" ? address.name + ', Facturation' : "",
-        addressType: address.type || '',
-        street: address.street || '',
-        state: address.region || '',
-        city: address.city || '',
-        phone: address.phone && address.phone.replace(/\s/g, "").replace("+237","") || '',
-        id: address.id || '',
-        country: "Cameroun",
-      });
+      if (address.add === "update"){
+        setFormData({
+          displayName: address.name,
+          name: address.type === "delivery" ? address.name + ', Livraison' : address.type === "invoice" ? address.name + ', Facturation' : "",
+          addressType: address.type || '',
+          street: address.street || '',
+          state: address.region || '',
+          city: address.city || '',
+          phone: address.phone && address.phone.replace(/\s/g, "").replace("+237","") || '',
+          id: address.id || '',
+          country: "Cameroun",
+        });
+      } else {
+        setFormData({
+          displayName: address.name,
+          name: 'New',
+          addressType: 'delivery',
+          street: '',
+          state: '',
+          city: '',
+          phone: '',
+          id: address.id || 0,
+          country: "Cameroun",
+        });
+      }
     }
   }, [address]);
 
@@ -105,10 +161,12 @@ export default function AddressEditModal({setIsModalOpen, isOpen, address, formS
         street: formData.street,
         phone: formData.phone,
         adressType: formData.addressType,
-        name: formData.displayName,
-        id: formData.id,
-        email: address.email,
+        name: formData.name,
+        id: formData.id ? formData.id : 0,
+        email: userEmail,
+        add: address.add,
       }
+      console.log(postData)
 
       await formSubmit(postData);
     }
@@ -137,24 +195,23 @@ export default function AddressEditModal({setIsModalOpen, isOpen, address, formS
           </div>
           <div className="modal-body">
             <form onSubmit={handleSubmit} className="delivery-modal__wrapper">
-              {formData.name && address.type !== "both"  && 
-                <div className="row">
-                  <div className="col-md-12">
-                    <div className="form-floating my-3">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="name"
-                        placeholder={"Libéllé de l'addresse *"}
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        disabled
-                      />
-                      <label htmlFor="name">{"Libéllé de l'addresse *"}</label>
-                      {/* {errors.firstName && <small className="text-danger">{errors.firstName}</small>} */}
-                    </div>
+              <div className="row">
+                <div className="col-md-12">
+                  <div className="form-floating my-3">
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="name"
+                      placeholder={"Libéllé de l'addresse *"}
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      disabled={address.add === "new" ? false : true}
+                    />
+                    <label htmlFor="name">{"Libéllé de l'addresse *"}</label>
+                    {/* {errors.firstName && <small className="text-danger">{errors.firstName}</small>} */}
                   </div>
-                </div>}
+                </div>
+              </div>
 
               <div className="row">
                 <div className="col-md-4">

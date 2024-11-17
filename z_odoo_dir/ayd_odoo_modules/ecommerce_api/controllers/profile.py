@@ -188,6 +188,7 @@ class EcommerceProfilessAPI(http.Controller):
         adressType = json_data.get('adressType') if json_data.get('adressType') else None
         name = json_data.get('name') if json_data.get('name') else None
         email = json_data.get('email') if json_data.get('email') else None
+        add = json_data.get('add') if json_data.get('add') else None
         id = int(json_data.get('id')) if json_data.get('id') else None
 
         profile = http.request.env['res.partner'].sudo().search([('id', '=', id)], limit=1)
@@ -212,21 +213,49 @@ class EcommerceProfilessAPI(http.Controller):
 
 
         if profile:
-            update_values = {
-                'mobile': phone,
-                'phone': phone,
-                'street': street,
-                'city': city,
-                'country_id': country_id.id,
-                'state_id': state_id.id,
-            }
-            if adressType != "both":
-                update_values['type'] = adressType
-                update_values['name'] = name
+            if "update" == add:
+                update_values = {
+                    'mobile': phone,
+                    'phone': phone,
+                    'street': street,
+                    'city': city,
+                    'country_id': country_id.id,
+                    'state_id': state_id.id,
+                }
+                if adressType != "both":
+                    update_values['type'] = adressType
+                    update_values['name'] = name
 
-            for rec in profile:
-                rec.write(update_values)
+                for rec in profile:
+                    rec.write(update_values)
+            else:
+                child_data_list = [
+                    {
+                        'type': profile.type,
+                        'mobile': profile.phone,
+                        'phone': profile.phone,
+                        'street': profile.street,
+                        'city': profile.city,
+                        'country_id': profile.country_id.id,
+                        'state_id': profile.state_id.id,
+                    },
+                    {
+                        'type': adressType,
+                        'mobile': phone,
+                        'phone': phone,
+                        'street': street,
+                        'city': city,
+                        'country_id': country_id.id,
+                        'state_id': state_id.id,
+                    }
+                ]
+                child_commands = [(0, 0, child_data) for child_data in child_data_list]
             
+                # Update the partner's child_ids
+                profile.write({
+                    'child_ids': child_commands,
+                })
+
             address = http.request.env['res.partner'].sudo().search([('email', '=', email)], limit=1)
             if address.child_ids:
                 values = {
@@ -272,6 +301,70 @@ class EcommerceProfilessAPI(http.Controller):
                 "data": values,
             }
             return res
+        
+        elif not profile and "new" == add:
+            address = http.request.env['res.partner'].sudo().search([('email', '=', email)], limit=1)
+            update_values = {
+                'mobile': phone,
+                'phone': phone,
+                'street': street,
+                'city': city,
+                'country_id': country_id.id,
+                'state_id': state_id.id,
+            }
+            if adressType != "both":
+                update_values['type'] = adressType
+                update_values['name'] = name
+
+            for rec in address:
+                rec.write(update_values)
+
+
+            if address.child_ids:
+                values = {
+                    'result': [
+                        {
+                            'id': o.id,
+                            'partner_name': address.name,
+                            'name': o.name,
+                            'type': o.type,
+                            'street': o.street,
+                            'street2': o.street2,
+                            'city': o.city,
+                            'region': o.state_id.code if o.state_id else '',
+                            'zip': o.zip,
+                            'country': o.country_id.name if o.country_id else '',
+                            'phone': o.phone,
+                            'mobile': o.mobile,
+                            'email': address.email,
+                        } for o in address.child_ids]
+                }
+            else:
+                values = {
+                    'result': [
+                        {
+                            'id': address.id,
+                            'name': address.name,
+                            'partner_name': address.name,
+                            'type': address.type,
+                            'street': address.street,
+                            'street2': address.street2,
+                            'city': address.city,
+                            'region': address.state_id.code if address.state_id else '',
+                            'zip': address.zip,
+                            'country': address.country_id.name if address.country_id else '',
+                            'phone': address.phone,
+                            'mobile': address.mobile,
+                            'email': address.email,
+                        }
+                    ]
+                }
+            res = {
+                "code": 201,
+                "data": values,
+            }
+            return res
+
         else:
             res = {
                 "code": 404,
