@@ -175,9 +175,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Edit app backend
 AUTHENTICATION_BACKENDS = ["account.auth_backend.EmailBackend"]
 
-# Backend for emails
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
 # Login and Logout redirect 
 LOGIN_URL = 'signin'
 LOGOUT_REDIRECT_URL = "signin"
@@ -224,3 +221,23 @@ DJOSER = {
 
 # My custom user AUth Model created
 AUTH_USER_MODEL = 'myproxy.AydCustomUser'
+
+if 'DEV' == config('MYENV'):
+    # Backend for emails
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    # Email Backend
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+    # SMTP Server Configuration
+    EMAIL_HOST = config('EMAIL_HOST')
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
+    # Optional Timeout (in seconds)
+    EMAIL_TIMEOUT = 10
+
+    # Default Email Sender
+    DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')

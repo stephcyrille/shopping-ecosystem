@@ -106,6 +106,7 @@ export default function Register() {
           // errors.submit = res_data.detail;
           // setErrors(errors);
           if (res_data.password) newErrors.password = res_data.password.length > 1 ? res_data.password[0] + ' ' + res_data.password[1] : res_data.password[0]
+          if (res_data.username) newErrors.email = res_data.username.length > 1 ? res_data.username[0] + ' ' + res_data.username[1] : res_data.username[0]
           setErrors(newErrors);
           setLoading(false);
         } else {
