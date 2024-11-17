@@ -258,7 +258,7 @@ export default function EditAccount() {
                       placeholder={"Nom affiché"}
                       value={formData.displayName}
                       onChange={handleInputChange}
-                      readOnly
+                      disabled
                     />
                     <label htmlFor="displayName">{"Nom affiché"}</label>
                   </div>
@@ -272,7 +272,7 @@ export default function EditAccount() {
                       placeholder={"Email"}
                       value={formData.email}
                       onChange={handleInputChange}
-                      readOnly
+                      disabled
                     />
                     <label htmlFor="email">{"Email"}</label>
                   </div>

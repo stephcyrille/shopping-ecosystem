@@ -23,6 +23,7 @@ class CustomSignupSerializer(serializers.ModelSerializer):
             birthdate=validated_data['birthdate'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
+            is_active=False
         )
         user.set_password(validated_data['password'])
         user.save()

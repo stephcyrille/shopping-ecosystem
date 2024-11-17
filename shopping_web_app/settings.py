@@ -215,6 +215,8 @@ DJOSER = {
     'ACTIVATION_URL': 'auth/users/activation/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
     'SET_PASSWORD_RETYPE': True,
+    'EMAIL_FRONTEND_DOMAIN': config('FRONTEND_DOMAIN', 'localhost:3000'),   # Custom domain for email links
+    'EMAIL_FRONTEND_SITE_NAME': 'Afro Yaca Drum',
     'SERIALIZERS': {
         'user_create': 'myproxy.auth.user_serializer.CustomUserCreateSerializer',
     },
